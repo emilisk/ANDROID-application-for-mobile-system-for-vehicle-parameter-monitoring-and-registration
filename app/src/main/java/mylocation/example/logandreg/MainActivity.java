@@ -44,6 +44,8 @@ public class MainActivity extends AppCompatActivity {
                 if(res == true)
                 {
                     Toast.makeText(MainActivity.this, "Successfully logged in", Toast.LENGTH_SHORT).show();
+                    Intent mapsactivityIntent = new Intent (MainActivity.this, MapsActivity.class);
+                    startActivity(mapsactivityIntent);
                 }
                 else
                 {

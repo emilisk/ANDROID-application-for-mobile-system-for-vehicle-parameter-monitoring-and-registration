@@ -12,5 +12,6 @@
     <string name="register2">register</string>
     <string name="or">OR</string>
     <string name="application">Application</string>
+    <string name="title_activity_maps">Map</string>
 
 </resources>

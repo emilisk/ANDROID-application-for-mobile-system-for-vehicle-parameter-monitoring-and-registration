@@ -1,4 +1,4 @@
-package mylocation.example.currentloc;
+package mylocation.example.logandreg;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
@@ -12,7 +12,6 @@ import android.location.Location;
 import android.os.Bundle;
 import android.os.Looper;
 import android.util.Log;
-import android.view.WindowManager;
 
 import com.google.android.gms.common.api.ResolvableApiException;
 import com.google.android.gms.location.FusedLocationProviderClient;
@@ -27,44 +26,41 @@ import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity3 extends AppCompatActivity {
 
-
-    private static final String TAG = "MainActivity";
+    private static final String TAG = "MainActivity3";
     int LOCATION_REQUEST_CODE = 10001;
-
     FusedLocationProviderClient fusedLocationProviderClient;
     LocationRequest locationRequest;
-
-    LocationCallback locationCallback = new LocationCallback(){
+    LocationCallback locationCallback = new LocationCallback() {
         @Override
         public void onLocationResult(LocationResult locationResult) {
-           if (locationResult == null){
-               return;
-           }
-           for(Location location: locationResult.getLocations()){
-               Log.d(TAG, "onLocationResult: " + location.toString());
-           }
+            if (locationResult == null){
+                return;
+            }
+            for(Location location: locationResult.getLocations()) {
+                Log.d(TAG, "onLocationResult: "+ location.toString());
+            }
         }
     };
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
+        setContentView(R.layout.activity_main3);
 
         fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this);
         locationRequest = LocationRequest.create();
         locationRequest.setInterval(4000);
         locationRequest.setFastestInterval(2000);
-        locationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
-        getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+        locationRequest.setPriority(locationRequest.PRIORITY_HIGH_ACCURACY);
     }
 
     @Override
     protected void onStart() {
         super.onStart();
-        if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED){
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager
+                .PERMISSION_GRANTED){
             //getLastLocation();
             checkSettingsAndStartLocationUpdates();
         } else {
@@ -86,7 +82,7 @@ public class MainActivity extends AppCompatActivity {
         locationSettingsResponseTask.addOnSuccessListener(new OnSuccessListener<LocationSettingsResponse>() {
             @Override
             public void onSuccess(LocationSettingsResponse locationSettingsResponse) {
-                // Settings of device satisfied and we can start location upadtes
+                // setting of device satisfied and we can start location updates
                 startLocationUpdates();
             }
         });
@@ -96,14 +92,13 @@ public class MainActivity extends AppCompatActivity {
                 if (e instanceof ResolvableApiException){
                     ResolvableApiException apiException = (ResolvableApiException) e;
                     try {
-                        apiException.startResolutionForResult(MainActivity.this, 1001);
+                        apiException.startResolutionForResult(MainActivity3.this, 10001);
                     } catch (IntentSender.SendIntentException sendIntentException) {
                         sendIntentException.printStackTrace();
                     }
                 }
             }
         });
-
     }
 
     private void startLocationUpdates(){
@@ -114,12 +109,15 @@ public class MainActivity extends AppCompatActivity {
         fusedLocationProviderClient.removeLocationUpdates(locationCallback);
     }
 
-    private void getLastLocation(){
+
+    private void getLastLocation() {
         Task<Location> locationTask = fusedLocationProviderClient.getLastLocation();
+
         locationTask.addOnSuccessListener(new OnSuccessListener<Location>() {
             @Override
             public void onSuccess(Location location) {
                 if (location != null){
+                    // we have a location
                     Log.d(TAG, "onSuccess: " + location.toString());
                     Log.d(TAG, "onSuccess: " + location.getLatitude());
                     Log.d(TAG, "onSuccess: " + location.getLongitude());
@@ -132,20 +130,20 @@ public class MainActivity extends AppCompatActivity {
         locationTask.addOnFailureListener(new OnFailureListener() {
             @Override
             public void onFailure(@NonNull Exception e) {
-                Log.e(TAG, "onFailure: " + e.getLocalizedMessage() );
+                Log.d(TAG, "onFailure: " + e.getLocalizedMessage() );
             }
         });
-
     }
 
-
-    private void askLocationPermission() {
+    private void askLocationPermission(){
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED){
-            if (ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.ACCESS_FINE_LOCATION)){
-                Log.d(TAG, "askLocationPermission: you should show an aler dialog...");
-                ActivityCompat.requestPermissions(this, new String[] {Manifest.permission.ACCESS_FINE_LOCATION}, LOCATION_REQUEST_CODE);
+            if (ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.ACCESS_FINE_LOCATION)) {
+                Log.d(TAG, "askLocationPermission: you should show alert dialogue");
+                ActivityCompat.requestPermissions(this, new String [] {Manifest.permission.ACCESS_FINE_LOCATION},
+                        LOCATION_REQUEST_CODE);
             } else {
-                ActivityCompat.requestPermissions(this, new String[] {Manifest.permission.ACCESS_FINE_LOCATION}, LOCATION_REQUEST_CODE);
+                ActivityCompat.requestPermissions(this, new String [] {Manifest.permission.ACCESS_FINE_LOCATION},
+                        LOCATION_REQUEST_CODE);
             }
         }
     }
@@ -153,12 +151,13 @@ public class MainActivity extends AppCompatActivity {
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         if (requestCode == LOCATION_REQUEST_CODE){
-            if(grantResults.length >0 && grantResults[0] == PackageManager.PERMISSION_GRANTED){
+            if (grantResults.length >0 && grantResults[0] == PackageManager.PERMISSION_GRANTED){
                 // Permission granted
-//                getLastLocation();
+                //getLastLocation();
                 checkSettingsAndStartLocationUpdates();
             } else {
-                // Permission not granted
+                // Permission is not granted
+
             }
         }
     }
