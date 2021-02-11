@@ -1,21 +1,30 @@
 package mylocation.example.logandreg;
 
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.SwitchCompat;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.FragmentActivity;
 
 import android.Manifest;
 import android.annotation.SuppressLint;
+import android.content.Context;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.location.Address;
 import android.location.Geocoder;
 import android.location.Location;
+import android.location.LocationListener;
+import android.location.LocationManager;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Looper;
 import android.util.Log;
 import android.view.WindowManager;
+import android.widget.CompoundButton;
+import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationCallback;
@@ -37,10 +46,12 @@ import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 
 import java.io.IOException;
+import java.util.Formatter;
 import java.util.List;
+import java.util.Locale;
 
 public class MapsActivity extends FragmentActivity implements OnMapReadyCallback, GoogleMap.OnMapLongClickListener,
-        GoogleMap.OnMarkerDragListener {
+        GoogleMap.OnMarkerDragListener, LocationListener {
 
     private static final String TAG ="MapsActivity";
     private GoogleMap mMap;
@@ -52,6 +63,11 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
     Marker userLocationMarker;
     Circle userLocationAccuracyCircle;
+
+    SwitchCompat sw_metric;
+    TextView tv_speed;
+
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -70,6 +86,28 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         locationRequest.setFastestInterval(500);
         locationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+
+        sw_metric = findViewById(R.id.sw_metric);
+        tv_speed = findViewById(R.id.tv_speed);
+
+        if(Build.VERSION.SDK_INT == Build.VERSION_CODES.M && checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION)
+                != PackageManager.PERMISSION_GRANTED){
+            requestPermissions(new String[] {Manifest.permission.ACCESS_FINE_LOCATION}, 1000);
+        } else {
+            doStuff();
+        }
+        this.updateSpeed(null);
+
+        sw_metric.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                MapsActivity.this.updateSpeed(null);
+            }
+        });
+
+
+
+
     }
 
     /**
@@ -90,6 +128,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         mMap.setOnMapLongClickListener(this);
         mMap.setOnMarkerDragListener(this);
 
+
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager
         .PERMISSION_GRANTED) {
             //enableUserLocation();
@@ -104,6 +143,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                         ACCESS_LOCATION_REQUEST_CODE);
             }
         }
+
 
         // Add a marker in Sydney and move the camera
 //        LatLng latLng = new LatLng(27.1751, 78.0421);
@@ -271,9 +311,84 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             if(grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED){
                 enableUserLocation();
                 zoomToUserLocation();
+                doStuff();
             } else {
                 // we can show dialog that permission is not granted
             }
         }
     }
+
+
+
+
+    // greiciui
+
+    @Override
+    public void onLocationChanged(@NonNull Location location) {
+        if(location != null){
+            CLocation myLocation = new CLocation(location, this.useMetricUnits());
+            this.updateSpeed(myLocation);
+        }
+    }
+
+    @Override
+    public void onStatusChanged(String provider, int status, Bundle extras) {
+
+    }
+
+    @Override
+    public void onProviderEnabled(@NonNull String provider) {
+
+    }
+
+    @Override
+    public void onProviderDisabled(@NonNull String provider) {
+
+    }
+
+    @SuppressLint("MissingPermission")
+    public void doStuff(){
+        LocationManager locationManager = (LocationManager) this.getSystemService(Context.LOCATION_SERVICE);
+        if(locationManager != null){
+            locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0 ,0, this);
+        }
+        Toast.makeText(this, "Waiting for GPS connection", Toast.LENGTH_SHORT).show();
+    }
+
+    private void updateSpeed(CLocation location){
+        float nCurrentSpeed = 0;
+
+        if(location != null) {
+            location.setUseMetricUnits(this.useMetricUnits());
+            nCurrentSpeed = location.getSpeed();
+            Log.d(TAG, "updateSpeed: " + location.getSpeed());
+        }
+
+        Formatter fmt = new Formatter(new StringBuilder());
+        fmt.format(Locale.US, "%5.1f", nCurrentSpeed);
+        String strCurrentSpeed = fmt.toString();
+        strCurrentSpeed = strCurrentSpeed.replace(" ", "0");
+
+
+        if(this.useMetricUnits()){
+            tv_speed.setText("Speed: "+ strCurrentSpeed + " km/h");
+        } else {
+            tv_speed.setText("Speed: "+ strCurrentSpeed + " miles/h");
+        }
+    }
+
+    private boolean useMetricUnits(){
+        return sw_metric.isChecked();
+    }
+
+
+
+
+
+
+
+
 }
+
+
+

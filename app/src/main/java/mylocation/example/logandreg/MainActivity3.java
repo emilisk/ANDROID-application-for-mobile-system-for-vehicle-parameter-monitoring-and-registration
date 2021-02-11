@@ -6,6 +6,7 @@ import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 
 import android.Manifest;
+import android.annotation.SuppressLint;
 import android.content.IntentSender;
 import android.content.pm.PackageManager;
 import android.location.Location;
@@ -101,6 +102,7 @@ public class MainActivity3 extends AppCompatActivity {
         });
     }
 
+    @SuppressLint("MissingPermission")
     private void startLocationUpdates(){
         fusedLocationProviderClient.requestLocationUpdates(locationRequest, locationCallback, Looper.getMainLooper());
     }
@@ -111,7 +113,7 @@ public class MainActivity3 extends AppCompatActivity {
 
 
     private void getLastLocation() {
-        Task<Location> locationTask = fusedLocationProviderClient.getLastLocation();
+        @SuppressLint("MissingPermission") Task<Location> locationTask = fusedLocationProviderClient.getLastLocation();
 
         locationTask.addOnSuccessListener(new OnSuccessListener<Location>() {
             @Override
@@ -121,6 +123,7 @@ public class MainActivity3 extends AppCompatActivity {
                     Log.d(TAG, "onSuccess: " + location.toString());
                     Log.d(TAG, "onSuccess: " + location.getLatitude());
                     Log.d(TAG, "onSuccess: " + location.getLongitude());
+                    Log.d(TAG, "onSuccess: " + location.getSpeed());
                 } else {
                     Log.d(TAG, "onSuccess: Location was null...");
                 }
