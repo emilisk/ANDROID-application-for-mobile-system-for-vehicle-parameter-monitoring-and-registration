@@ -9,9 +9,14 @@ import androidx.fragment.app.FragmentActivity;
 
 import android.Manifest;
 import android.annotation.SuppressLint;
+import android.content.AsyncQueryHandler;
 import android.content.Context;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
+import android.hardware.Sensor;
+import android.hardware.SensorEvent;
+import android.hardware.SensorEventListener;
+import android.hardware.SensorManager;
 import android.location.Address;
 import android.location.Geocoder;
 import android.location.Location;
@@ -21,11 +26,21 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Looper;
 import android.util.Log;
+import android.view.View;
 import android.view.WindowManager;
+import android.widget.Button;
 import android.widget.CompoundButton;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
+import android.widget.ToggleButton;
 
+import com.android.volley.Request;
+import com.android.volley.RequestQueue;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.JsonObjectRequest;
+import com.android.volley.toolbox.Volley;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationCallback;
 import com.google.android.gms.location.LocationRequest;
@@ -45,13 +60,16 @@ import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.io.IOException;
 import java.util.Formatter;
 import java.util.List;
 import java.util.Locale;
 
 public class MapsActivity extends FragmentActivity implements OnMapReadyCallback, GoogleMap.OnMapLongClickListener,
-        GoogleMap.OnMarkerDragListener, LocationListener {
+        GoogleMap.OnMarkerDragListener, LocationListener, SensorEventListener {
 
     private static final String TAG ="MapsActivity";
     private GoogleMap mMap;
@@ -68,6 +86,15 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     TextView tv_speed;
 
 
+    // Mygtukas
+    ToggleButton mygtukas;
+    //
+
+    //Akselerometras
+    SensorManager sensorManager;
+    Sensor accelerometer;
+
+    TextView xValue, yValue, zValue;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -89,6 +116,53 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
         sw_metric = findViewById(R.id.sw_metric);
         tv_speed = findViewById(R.id.tv_speed);
+
+        //Akselerometras
+//        xValue = (TextView) findViewById(R.id.xValue);
+//        yValue = (TextView) findViewById(R.id.yValue);
+//        zValue = (TextView) findViewById(R.id.zValue);
+
+
+
+
+        Log.d(TAG, "onCreate: Initializing Sensor Services");
+        sensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
+
+        accelerometer = sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
+        sensorManager.registerListener(MapsActivity.this, accelerometer, SensorManager.SENSOR_DELAY_NORMAL);
+        Log.d(TAG, "onCreate: Registered acclerometer listener");
+        //
+
+
+        //
+        mygtukas = findViewById(R.id.mygtukas);
+        //MYGTUKAS
+        mygtukas.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                boolean on = ((ToggleButton) v).isChecked();
+
+                if (on) {
+                    //button.setBackgroundColor(getResources().getColor(greenTranslucent));
+                    Toast.makeText(MapsActivity.this, "Started", Toast.LENGTH_LONG).show();
+                    //detection_state = true;
+                    Log.d(TAG, "start trip");
+
+
+                } else {
+                    //button.setBackgroundColor(getResources().getColor(grayTranslucent));
+                    Toast.makeText(MapsActivity.this, "Stopped", Toast.LENGTH_LONG).show();
+                    //detection_state = false;
+                    Log.d(TAG, "stop trip");
+
+                }
+
+            }
+        });
+        //
+
+
 
         if(Build.VERSION.SDK_INT == Build.VERSION_CODES.M && checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION)
                 != PackageManager.PERMISSION_GRANTED){
@@ -127,6 +201,10 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
         mMap.setOnMapLongClickListener(this);
         mMap.setOnMarkerDragListener(this);
+
+
+//        final String url = "http://78.60.2.145:8001/speed/";
+//        final RequestQueue queue = Volley.newRequestQueue((Context)this);
 
 
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager
@@ -179,6 +257,47 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             Log.d(TAG, "onLocationResult: " + locationResult.getLastLocation());
             if (mMap != null){
                 setUserLocationMarker(locationResult.getLastLocation());
+
+//                final String url = "http://78.60.2.145:8001/location/";
+//                final RequestQueue queue = Volley.newRequestQueue((Context)MapsActivity.this);
+//
+//                final JSONObject req_data = new JSONObject();
+//                try {
+//                    req_data.put("id", "1");
+//                    req_data.put("latitude", locationResult.getLastLocation());
+//                    req_data.put("longitude", locationResult.getLastLocation());
+//                } catch (JSONException e) {
+//                    e.printStackTrace();
+//                }
+//
+//                JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(1, url, req_data, (Response.Listener)(new Response.Listener() {
+//                    // $FF: synthetic method
+//                    // $FF: bridge method
+//                    public void onResponse(Object var1) {
+//                        this.onResponse((JSONObject)var1);
+//                    }
+//
+//                    public final void onResponse(JSONObject response) {
+//                        //TextView var10000 = txt;
+//                        //Intrinsics.checkNotNullExpressionValue(var10000, "txt");
+//                        //String var2 = "Response: %s";
+//                        //Object[] var3 = new Object[]{response.toString()};
+//                        //boolean var4 = false;
+//                        //String var10001 = String.format(var2, Arrays.copyOf(var3, var3.length));
+//                        //Intrinsics.checkNotNullExpressionValue(var10001, "java.lang.String.format(this, *args)");
+//                        //var10000.setText((CharSequence)var10001);
+//                    }
+//                }), (Response.ErrorListener)(new Response.ErrorListener() {
+//                    public final void onErrorResponse(VolleyError error) {
+//                        //TextView var10000 = txt;
+//                        //Intrinsics.checkNotNullExpressionValue(var10000, "txt");
+//                        //var10000.setText((CharSequence)error.toString());
+//                    }
+//                }));
+//                queue.add((Request)jsonObjectRequest);
+
+
+
             }
         }
     };
@@ -328,6 +447,60 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         if(location != null){
             CLocation myLocation = new CLocation(location, this.useMetricUnits());
             this.updateSpeed(myLocation);
+
+
+
+            double latitude = 0;
+            double longitude = 0;
+
+
+            Log.d(TAG, "onLocationResult: " + location.getLatitude());
+            Log.d(TAG, "onLocationResult: " + location.getLongitude());
+
+
+            latitude = location.getLatitude();
+            longitude = location.getLongitude();
+
+            final String url = "http://78.60.2.145:8001/location/";
+            final RequestQueue queue = Volley.newRequestQueue((Context)this);
+
+            final JSONObject req_data = new JSONObject();
+            try {
+                req_data.put("id", "1");
+                req_data.put("latitude", latitude);
+                req_data.put("longitude", longitude);
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+
+            JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(1, url, req_data, (Response.Listener) (new Response.Listener() {
+                // $FF: synthetic method
+                // $FF: bridge method
+                public void onResponse(Object var1) {
+                    this.onResponse((JSONObject) var1);
+                }
+
+                public final void onResponse(JSONObject response) {
+                    //TextView var10000 = txt;
+                    //Intrinsics.checkNotNullExpressionValue(var10000, "txt");
+                    //String var2 = "Response: %s";
+                    //Object[] var3 = new Object[]{response.toString()};
+                    //boolean var4 = false;
+                    //String var10001 = String.format(var2, Arrays.copyOf(var3, var3.length));
+                    //Intrinsics.checkNotNullExpressionValue(var10001, "java.lang.String.format(this, *args)");
+                    //var10000.setText((CharSequence)var10001);
+                }
+            }), (Response.ErrorListener) (new Response.ErrorListener() {
+                public final void onErrorResponse(VolleyError error) {
+                    //TextView var10000 = txt;
+                    //Intrinsics.checkNotNullExpressionValue(var10000, "txt");
+                    //var10000.setText((CharSequence)error.toString());
+                }
+            }));
+            queue.add((Request) jsonObjectRequest);
+
+
+
         }
     }
 
@@ -357,11 +530,55 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
     private void updateSpeed(CLocation location){
         float nCurrentSpeed = 0;
+        ///
+        final String url = "http://78.60.2.145:8001/speed/";
+        final RequestQueue queue = Volley.newRequestQueue((Context)this);
 
         if(location != null) {
             location.setUseMetricUnits(this.useMetricUnits());
             nCurrentSpeed = location.getSpeed();
             Log.d(TAG, "updateSpeed: " + location.getSpeed());
+
+
+            /// GREITIS ///
+
+//            final JSONObject req_data = new JSONObject();
+//            try {
+//                req_data.put("id", "1");
+//                req_data.put("speed", nCurrentSpeed);
+//            } catch (JSONException e) {
+//                e.printStackTrace();
+//            }
+
+//            JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(1, url, req_data, (Response.Listener)(new Response.Listener() {
+//                // $FF: synthetic method
+//                // $FF: bridge method
+//                public void onResponse(Object var1) {
+//                    this.onResponse((JSONObject)var1);
+//                }
+//
+//                public final void onResponse(JSONObject response) {
+//                    //TextView var10000 = txt;
+//                    //Intrinsics.checkNotNullExpressionValue(var10000, "txt");
+//                    //String var2 = "Response: %s";
+//                    //Object[] var3 = new Object[]{response.toString()};
+//                    //boolean var4 = false;
+//                    //String var10001 = String.format(var2, Arrays.copyOf(var3, var3.length));
+//                    //Intrinsics.checkNotNullExpressionValue(var10001, "java.lang.String.format(this, *args)");
+//                    //var10000.setText((CharSequence)var10001);
+//                }
+//            }), (Response.ErrorListener)(new Response.ErrorListener() {
+//                public final void onErrorResponse(VolleyError error) {
+//                    //TextView var10000 = txt;
+//                    //Intrinsics.checkNotNullExpressionValue(var10000, "txt");
+//                    //var10000.setText((CharSequence)error.toString());
+//                }
+//            }));
+//            queue.add((Request)jsonObjectRequest);
+
+
+
+
         }
 
         Formatter fmt = new Formatter(new StringBuilder());
@@ -381,6 +598,22 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         return sw_metric.isChecked();
     }
 
+    @Override
+    public void onAccuracyChanged(Sensor sensor, int i) {
+
+    }
+
+    @Override
+    public void onSensorChanged(SensorEvent sensorEvent) {
+        Log.d(TAG, "onSensorChanged: X: " +sensorEvent.values[0] + "Y: " + sensorEvent.values[1] + "Z: " + sensorEvent.values[2]);
+
+//        xValue.setText("xValue:" + sensorEvent.values[0]);
+//        yValue.setText("yValue:" + sensorEvent.values[1]);
+//        zValue.setText("zValue:" + sensorEvent.values[2]);
+    }
+
+
+    ///
 
 
 

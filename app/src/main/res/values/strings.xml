@@ -3,15 +3,16 @@
     <string name="username">Username</string>
     <string name="password">Password</string>
     <string name="login">Login</string>
-    <string name="not_registered">Not Registered</string>
+    <string name="not_registered">Not Registered?</string>
     <string name="register">Register</string>
     <string name="confirmation_password">Confirmation Password</string>
-    <string name="already_registered">Already Registered</string>
+    <string name="already_registered">Already Registered?</string>
     <string name="welcome">Welcome !</string>
     <string name="login2">login</string>
     <string name="register2">register</string>
     <string name="or">OR</string>
     <string name="application">Application</string>
     <string name="title_activity_maps">Map</string>
+    <string name="confirm_password">Confirm password</string>
 
 </resources>

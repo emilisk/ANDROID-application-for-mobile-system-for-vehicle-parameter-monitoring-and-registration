@@ -22,7 +22,19 @@
         android:theme="@style/Theme.Logandreg">
 
         <activity android:name=".Siuntimui">
+<!--            <intent-filter>-->
+<!--                <action android:name="android.intent.action.MAIN" />-->
 
+<!--                <category android:name="android.intent.category.LAUNCHER" />-->
+<!--            </intent-filter>-->
+        </activity>
+
+        <activity android:name=".SIUNTIMUIJAVA">
+<!--            <intent-filter>-->
+<!--                <action android:name="android.intent.action.MAIN" />-->
+
+<!--                <category android:name="android.intent.category.LAUNCHER" />-->
+<!--            </intent-filter>-->
         </activity>
         <!--
              The API key for Google Maps-based APIs is defined as a string resource.
@@ -48,10 +60,20 @@
         <activity android:name=".MainActivity3" />
         <activity android:name=".Speed">
         </activity>
-        <activity android:name=".RegisterActivity" />
+        <activity android:name=".RegisterActivity">
+<!--        <intent-filter>-->
+<!--            <action android:name="android.intent.action.MAIN" />-->
+
+<!--            <category android:name="android.intent.category.LAUNCHER" />-->
+<!--        </intent-filter>-->
+    </activity>
         <activity android:name=".MainActivity" />
         <activity android:name=".MainActivity2">
+<!--            <intent-filter>-->
+<!--                <action android:name="android.intent.action.MAIN" />-->
 
+<!--                <category android:name="android.intent.category.LAUNCHER" />-->
+<!--            </intent-filter>-->
         </activity>
     </application>
 

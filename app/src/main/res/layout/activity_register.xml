@@ -40,12 +40,12 @@
 
     <EditText
         android:id="@+id/edittext_cnf_password"
-        android:layout_width="215dp"
+        android:layout_width="190dp"
         android:layout_height="35dp"
         android:layout_marginTop="20dp"
         android:background="#ffffff"
         android:drawableLeft="@drawable/ic_baseline_security_24"
-        android:hint="@string/confirmation_password"
+        android:hint="@string/confirm_password"
         android:inputType="textPassword" />
 
     <Button
