@@ -11,6 +11,7 @@ import android.Manifest;
 import android.annotation.SuppressLint;
 import android.content.AsyncQueryHandler;
 import android.content.Context;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.hardware.Sensor;
@@ -26,6 +27,9 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Looper;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.Button;
@@ -96,6 +100,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
     TextView xValue, yValue, zValue;
 
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -121,6 +126,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 //        xValue = (TextView) findViewById(R.id.xValue);
 //        yValue = (TextView) findViewById(R.id.yValue);
 //        zValue = (TextView) findViewById(R.id.zValue);
+
+
 
 
 
@@ -183,6 +190,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
 
     }
+
 
     /**
      * Manipulates the map once available.
@@ -444,25 +452,27 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
     @Override
     public void onLocationChanged(@NonNull Location location) {
+        
+        float latitude = 0;
+        float longitude = 0;
+        final String url = "http://78.60.2.145:8001/location/";
+        final RequestQueue queue = Volley.newRequestQueue((Context)this);
         if(location != null){
             CLocation myLocation = new CLocation(location, this.useMetricUnits());
             this.updateSpeed(myLocation);
 
 
 
-            double latitude = 0;
-            double longitude = 0;
 
 
             Log.d(TAG, "onLocationResult: " + location.getLatitude());
             Log.d(TAG, "onLocationResult: " + location.getLongitude());
 
 
-            latitude = location.getLatitude();
-            longitude = location.getLongitude();
+            latitude = (float) location.getLatitude();
+            longitude = (float) location.getLongitude();
 
-            final String url = "http://78.60.2.145:8001/location/";
-            final RequestQueue queue = Volley.newRequestQueue((Context)this);
+
 
             final JSONObject req_data = new JSONObject();
             try {
@@ -542,39 +552,39 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
             /// GREITIS ///
 
-//            final JSONObject req_data = new JSONObject();
-//            try {
-//                req_data.put("id", "1");
-//                req_data.put("speed", nCurrentSpeed);
-//            } catch (JSONException e) {
-//                e.printStackTrace();
-//            }
+            final JSONObject req_data = new JSONObject();
+            try {
+                req_data.put("id", "1");
+                req_data.put("speed", nCurrentSpeed);
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
 
-//            JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(1, url, req_data, (Response.Listener)(new Response.Listener() {
-//                // $FF: synthetic method
-//                // $FF: bridge method
-//                public void onResponse(Object var1) {
-//                    this.onResponse((JSONObject)var1);
-//                }
-//
-//                public final void onResponse(JSONObject response) {
-//                    //TextView var10000 = txt;
-//                    //Intrinsics.checkNotNullExpressionValue(var10000, "txt");
-//                    //String var2 = "Response: %s";
-//                    //Object[] var3 = new Object[]{response.toString()};
-//                    //boolean var4 = false;
-//                    //String var10001 = String.format(var2, Arrays.copyOf(var3, var3.length));
-//                    //Intrinsics.checkNotNullExpressionValue(var10001, "java.lang.String.format(this, *args)");
-//                    //var10000.setText((CharSequence)var10001);
-//                }
-//            }), (Response.ErrorListener)(new Response.ErrorListener() {
-//                public final void onErrorResponse(VolleyError error) {
-//                    //TextView var10000 = txt;
-//                    //Intrinsics.checkNotNullExpressionValue(var10000, "txt");
-//                    //var10000.setText((CharSequence)error.toString());
-//                }
-//            }));
-//            queue.add((Request)jsonObjectRequest);
+            JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(1, url, req_data, (Response.Listener)(new Response.Listener() {
+                // $FF: synthetic method
+                // $FF: bridge method
+                public void onResponse(Object var1) {
+                    this.onResponse((JSONObject)var1);
+                }
+
+                public final void onResponse(JSONObject response) {
+                    //TextView var10000 = txt;
+                    //Intrinsics.checkNotNullExpressionValue(var10000, "txt");
+                    //String var2 = "Response: %s";
+                    //Object[] var3 = new Object[]{response.toString()};
+                    //boolean var4 = false;
+                    //String var10001 = String.format(var2, Arrays.copyOf(var3, var3.length));
+                    //Intrinsics.checkNotNullExpressionValue(var10001, "java.lang.String.format(this, *args)");
+                    //var10000.setText((CharSequence)var10001);
+                }
+            }), (Response.ErrorListener)(new Response.ErrorListener() {
+                public final void onErrorResponse(VolleyError error) {
+                    //TextView var10000 = txt;
+                    //Intrinsics.checkNotNullExpressionValue(var10000, "txt");
+                    //var10000.setText((CharSequence)error.toString());
+                }
+            }));
+            queue.add((Request)jsonObjectRequest);
 
 
 
@@ -614,13 +624,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
 
     ///
-
-
-
-
-
-
-
 }
 
 
