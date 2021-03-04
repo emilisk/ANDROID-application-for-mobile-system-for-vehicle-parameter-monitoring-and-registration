@@ -1,7 +1,5 @@
 package mylocation.example.logandreg;
 
-import androidx.appcompat.app.AppCompatActivity;
-
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
@@ -10,6 +8,8 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import androidx.appcompat.app.AppCompatActivity;
 
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
@@ -21,9 +21,10 @@ import com.android.volley.toolbox.Volley;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.util.Arrays;
+import java.security.MessageDigest;
 
-import kotlin.jvm.internal.Intrinsics;
+import javax.crypto.Cipher;
+import javax.crypto.spec.SecretKeySpec;
 
 public class RegisterActivity extends AppCompatActivity {
     DatabaseHelper db;
@@ -32,6 +33,12 @@ public class RegisterActivity extends AppCompatActivity {
     EditText mTextCnfPassword;
     Button mButtonRegister;
     TextView mTextViewLogin;
+
+    // kodavimas
+    String outputString;
+    String AES = "AES";
+    TextView outputText;
+    // kodavimas
 
 
     @Override
@@ -73,7 +80,13 @@ public class RegisterActivity extends AppCompatActivity {
         mButtonRegister.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                String user = mTextUsername.getText().toString().trim();
+                String user = null;
+                try {
+                    user = encrypt(mTextUsername.getText().toString().trim(), mTextPassword.getText().toString().trim());
+                    outputText.setText(user);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
                 String pwd = mTextPassword.getText().toString().trim();
                 String cnf_pwd = mTextCnfPassword.getText().toString().trim();
 
@@ -140,5 +153,33 @@ public class RegisterActivity extends AppCompatActivity {
 
 
 
+        // KODAVIMAS
+        try {
+            outputString = encrypt(mTextUsername.getText().toString(), mTextPassword.getText().toString());
+            outputText.setText(outputString);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        ///
+
+    }
+
+    private String encrypt(String Data, String password) throws Exception {
+        SecretKeySpec key = generateKey(password);
+        Cipher c = Cipher.getInstance(AES);
+        c.init(Cipher.ENCRYPT_MODE, key);
+        byte[] encVal = c.doFinal(Data.getBytes());
+//        String encryptedValue = Base64.getEncoder(encVal, Base64.DEFAULT);
+        String encryptedValue = android.util.Base64.encodeToString(encVal, android.util.Base64.DEFAULT);
+        return  encryptedValue;
+    }
+
+    private SecretKeySpec generateKey(String password) throws Exception {
+        final MessageDigest digest = MessageDigest.getInstance(("SHA-256"));
+        byte[] bytes = password.getBytes("UTF-8");
+        digest.update(bytes, 0, bytes.length);
+        byte[] key = digest.digest();
+        SecretKeySpec secretKeySpec = new SecretKeySpec(key, "AES");
+        return secretKeySpec;
     }
 }
