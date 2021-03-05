@@ -3,6 +3,7 @@ package mylocation.example.logandreg;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -78,12 +79,19 @@ public class RegisterActivity extends AppCompatActivity {
             }
         });
         mButtonRegister.setOnClickListener(new View.OnClickListener() {
+            private static final String TAG ="RegisterActivity";
+
             @Override
             public void onClick(View view) {
                 String user = null;
                 try {
                     user = encrypt(mTextUsername.getText().toString().trim(), mTextPassword.getText().toString().trim());
-                    outputText.setText(user);
+                    //outputText.setText(user);
+                    //
+                    outputString = decrypt(user, mTextPassword.getText().toString().trim());
+                    Log.d(TAG, "onClick: " + user);
+                    Log.d(TAG, "onClick: " + outputString);
+                    //
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
@@ -156,12 +164,31 @@ public class RegisterActivity extends AppCompatActivity {
         // KODAVIMAS
         try {
             outputString = encrypt(mTextUsername.getText().toString(), mTextPassword.getText().toString());
-            outputText.setText(outputString);
+            //
         } catch (Exception e) {
             e.printStackTrace();
         }
         ///
 
+
+        // Dekodavimas
+        try {
+            outputString = decrypt(outputString, mTextPassword.getText().toString());
+           //
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+    }
+
+    private String decrypt(String outputString, String password) throws Exception {
+        SecretKeySpec key = generateKey(password);
+        Cipher c = Cipher.getInstance(AES);
+        c.init(Cipher.DECRYPT_MODE, key);
+        byte[] decodedValue = android.util.Base64.decode(outputString, android.util.Base64.DEFAULT);
+        byte[] decValue = c.doFinal(decodedValue);
+        String decryptedValue = new String(decValue);
+        return decryptedValue;
     }
 
     private String encrypt(String Data, String password) throws Exception {
