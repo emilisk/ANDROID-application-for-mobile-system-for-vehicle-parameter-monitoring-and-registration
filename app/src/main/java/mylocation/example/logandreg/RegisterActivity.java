@@ -41,6 +41,9 @@ public class RegisterActivity extends AppCompatActivity {
     TextView outputText;
     // kodavimas
 
+    //JSON Fetching
+    RequestQueue rq;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -87,6 +90,7 @@ public class RegisterActivity extends AppCompatActivity {
                 try {
                     user = encrypt(mTextUsername.getText().toString().trim(), mTextPassword.getText().toString().trim());
                     //outputText.setText(user);
+
                     //
                     outputString = decrypt(user, mTextPassword.getText().toString().trim());
                     Log.d(TAG, "onClick: " + user);
@@ -179,6 +183,40 @@ public class RegisterActivity extends AppCompatActivity {
             e.printStackTrace();
         }
 
+
+        //JSON FETCHING
+        rq = Volley.newRequestQueue(this);
+        sendjsonrequest();
+        //
+
+
+
+    }
+
+    public void sendjsonrequest(){
+        final String url = "http://78.60.2.145:8001/registracija/";
+        JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.GET, url, null, new Response.Listener<JSONObject>() {
+            @Override
+            public void onResponse(JSONObject response) {
+                String user;
+                String pwd;
+                try {
+                    user = response.getString("username");
+                    pwd = response.getString("password");
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+
+
+            }
+        }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+
+            }
+        });
+        rq.add(jsonObjectRequest);
+
     }
 
     private String decrypt(String outputString, String password) throws Exception {
@@ -209,4 +247,6 @@ public class RegisterActivity extends AppCompatActivity {
         SecretKeySpec secretKeySpec = new SecretKeySpec(key, "AES");
         return secretKeySpec;
     }
+
+
 }
