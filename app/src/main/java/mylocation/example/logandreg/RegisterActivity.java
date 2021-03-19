@@ -86,9 +86,9 @@ public class RegisterActivity extends AppCompatActivity {
 
             @Override
             public void onClick(View view) {
-                String user = null;
+                String user = mTextUsername.getText().toString().trim();
                 try {
-                    user = encrypt(mTextUsername.getText().toString().trim(), mTextPassword.getText().toString().trim());
+//                    user = encrypt(mTextUsername.getText().toString().trim(), mTextPassword.getText().toString().trim());
                     //outputText.setText(user);
 
                     //
