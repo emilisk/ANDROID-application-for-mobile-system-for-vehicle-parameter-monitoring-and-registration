@@ -687,6 +687,28 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
 //        zValue.setText("zValue:" + sensorEvent.values[2]);
     }
 
+        private static MapsActivity lastPausedActivity = null;
+
+        @Override
+        protected void onPause() {
+
+            super.onPause();
+            lastPausedActivity = this;
+        }
+
+        @Override
+        protected void onResume() {
+
+            super.onResume();
+            if(this == lastPausedActivity) {
+                lastPausedActivity = null;
+                Intent intent = new Intent(this, MapsActivity.class);
+                intent.setFlags( Intent.FLAG_ACTIVITY_CLEAR_TOP );
+                startActivity(intent);
+            }
+        }
+
+
 
     ///
 }
