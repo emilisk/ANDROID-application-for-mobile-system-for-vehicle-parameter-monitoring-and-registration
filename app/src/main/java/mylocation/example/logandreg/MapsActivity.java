@@ -61,6 +61,7 @@ import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
+import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -186,7 +187,30 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
 
         //
 
+        //bottom menu
+        BottomNavigationView bottomNavigationView = findViewById(R.id.bottom_navigation);
 
+        //Set main Selected
+        bottomNavigationView.setSelectedItemId(R.id.nav_main);
+        //Perfomr itemselectedListener
+        bottomNavigationView.setOnNavigationItemSelectedListener(new BottomNavigationView.OnNavigationItemSelectedListener() {
+            @Override
+            public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+                switch (item.getItemId()){
+                    case R.id.nav_main:
+                        return true;
+                    case R.id.nav_profile:
+                        startActivity(new Intent(getApplicationContext(),Profile.class));
+                        overridePendingTransition(0, 0);
+                        return true;
+                    case R.id.nav_about:
+                        startActivity(new Intent(getApplicationContext(),About.class));
+                        overridePendingTransition(0, 0);
+                        return true;
+                }
+                return false;
+            }
+        });
 
 
 

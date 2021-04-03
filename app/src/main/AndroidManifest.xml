@@ -20,17 +20,21 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.Logandreg"
         android:usesCleartextTraffic="true">
-        <activity android:name=".Login"
+        <activity android:name=".About"></activity>
+        <activity android:name=".Profile" />
+        <activity
+            android:name=".Login"
+            android:theme="@style/Theme.Design.Light.NoActionBar" />
+        <activity
+            android:name=".SignUp"
             android:theme="@style/Theme.Design.Light.NoActionBar">
 
-        </activity>
-        <activity android:name=".SignUp"
-            android:theme="@style/Theme.Design.Light.NoActionBar">
-<!--            <intent-filter>-->
-<!--                <action android:name="android.intent.action.MAIN" />-->
+            <!-- <intent-filter> -->
+            <!-- <action android:name="android.intent.action.MAIN" /> -->
 
-<!--                <category android:name="android.intent.category.LAUNCHER" />-->
-<!--            </intent-filter>-->
+
+            <!-- <category android:name="android.intent.category.LAUNCHER" /> -->
+            <!-- </intent-filter> -->
         </activity>
         <activity android:name=".reg">
 
@@ -41,8 +45,7 @@
             <!-- <category android:name="android.intent.category.LAUNCHER" /> -->
             <!-- </intent-filter> -->
         </activity>
-        <activity android:name=".log">
-        </activity>
+        <activity android:name=".log" />
         <activity android:name=".Siuntimui">
 
             <!-- <intent-filter> -->
@@ -77,35 +80,37 @@
             android:name=".MapsActivity"
             android:label="@string/title_activity_maps">
 
-            <!-- <intent-filter> -->
-            <!-- <action android:name="android.intent.action.MAIN" /> -->
-
-
-            <!-- <category android:name="android.intent.category.LAUNCHER" /> -->
-            <!-- </intent-filter> -->
-        </activity>
-        <activity android:name=".MainActivity3" />
-        <activity android:name=".Speed" />
-        <activity android:name=".RegisterActivity"
-            android:theme="@style/Theme.tema">
-
-            <!-- <intent-filter> -->
-            <!-- <action android:name="android.intent.action.MAIN" /> -->
-
-
-            <!-- <category android:name="android.intent.category.LAUNCHER" /> -->
-            <!-- </intent-filter> -->
-        </activity>
-        <activity android:name=".MainActivity"
-            android:theme="@style/Theme.tema"/>
-        <activity android:name=".MainActivity2"
-            android:theme="@style/Theme.tema">
              <intent-filter>
              <action android:name="android.intent.action.MAIN" />
 
 
              <category android:name="android.intent.category.LAUNCHER" />
              </intent-filter>
+        </activity>
+        <activity android:name=".MainActivity3" />
+        <activity android:name=".Speed" />
+        <activity
+            android:name=".RegisterActivity"
+            android:theme="@style/Theme.tema">
+
+            <!-- <intent-filter> -->
+            <!-- <action android:name="android.intent.action.MAIN" /> -->
+
+
+            <!-- <category android:name="android.intent.category.LAUNCHER" /> -->
+            <!-- </intent-filter> -->
+        </activity>
+        <activity
+            android:name=".MainActivity"
+            android:theme="@style/Theme.tema" />
+        <activity
+            android:name=".MainActivity2"
+            android:theme="@style/Theme.tema">
+<!--            <intent-filter>-->
+<!--                <action android:name="android.intent.action.MAIN" />-->
+
+<!--                <category android:name="android.intent.category.LAUNCHER" />-->
+<!--            </intent-filter>-->
         </activity>
     </application>
 

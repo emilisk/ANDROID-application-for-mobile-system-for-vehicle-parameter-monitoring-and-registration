@@ -39,6 +39,7 @@ public class RegisterActivity extends AppCompatActivity {
     String outputString;
     String AES = "AES";
     TextView outputText;
+    String raktas = "burbuliukas";
     // kodavimas
 
     //JSON Fetching
@@ -49,6 +50,28 @@ public class RegisterActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_register);
+
+        RequestQueue requestQueue = Volley.newRequestQueue(this);
+        String URL = "http://78.60.2.145:8001/registracija2/";;
+        final String TAG ="RegisterActivity";
+        JsonObjectRequest objectRequest = new JsonObjectRequest(
+                Request.Method.GET,
+                URL,
+                null,
+                new Response.Listener<JSONObject>() {
+                    @Override
+                    public void onResponse(JSONObject response) {
+                        Log.d(TAG, "Response: " + response.toString());
+                    }
+                },
+                new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        Log.e("Rest Response", error.toString());
+                    }
+                }
+        );
+        requestQueue.add(objectRequest);
 
 
         //SIUNTIMUI IR SERVA
@@ -87,20 +110,37 @@ public class RegisterActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 String user = mTextUsername.getText().toString().trim();
-                try {
+//                try {
 //                    user = encrypt(mTextUsername.getText().toString().trim(), mTextPassword.getText().toString().trim());
+//                    //outputText.setText(user);
+//
+//                    //
+//                    outputString = decrypt(user, mTextPassword.getText().toString().trim());
+//                    Log.d(TAG, "onClick: " + user);
+//                    Log.d(TAG, "onClick: " + outputString);
+//                    //
+//                } catch (Exception e) {
+//                    e.printStackTrace();
+//                }
+                String pwd = mTextPassword.getText().toString().trim();
+                try {
+                    pwd = encrypt(mTextPassword.getText().toString().trim(), raktas);
                     //outputText.setText(user);
 
                     //
-                    outputString = decrypt(user, mTextPassword.getText().toString().trim());
-                    Log.d(TAG, "onClick: " + user);
+                    outputString = decrypt(pwd, raktas);
+                    Log.d(TAG, "onClick: " + pwd);
                     Log.d(TAG, "onClick: " + outputString);
                     //
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
-                String pwd = mTextPassword.getText().toString().trim();
                 String cnf_pwd = mTextCnfPassword.getText().toString().trim();
+                try {
+                    cnf_pwd = encrypt(mTextCnfPassword.getText().toString().trim(), raktas);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
 
                 final JSONObject req_data = new JSONObject();
                 try {
@@ -167,7 +207,7 @@ public class RegisterActivity extends AppCompatActivity {
 
         // KODAVIMAS
         try {
-            outputString = encrypt(mTextUsername.getText().toString(), mTextPassword.getText().toString());
+            outputString = encrypt(mTextPassword.getText().toString(), raktas);
             //
         } catch (Exception e) {
             e.printStackTrace();
@@ -177,7 +217,7 @@ public class RegisterActivity extends AppCompatActivity {
 
         // Dekodavimas
         try {
-            outputString = decrypt(outputString, mTextPassword.getText().toString());
+            outputString = decrypt(outputString, raktas);
            //
         } catch (Exception e) {
             e.printStackTrace();
@@ -185,8 +225,8 @@ public class RegisterActivity extends AppCompatActivity {
 
 
         //JSON FETCHING
-        rq = Volley.newRequestQueue(this);
-        sendjsonrequest();
+//        rq = Volley.newRequestQueue(this);
+//        sendjsonrequest();
         //
 
 
@@ -194,33 +234,46 @@ public class RegisterActivity extends AppCompatActivity {
     }
 
     public void sendjsonrequest(){
-        final String url = "http://78.60.2.145:8001/registracija/";
+
+        final String url = "http://78.60.2.145:8001/registracija2/";
+        final String TAG ="RegisterActivity";
         JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.GET, url, null, new Response.Listener<JSONObject>() {
             @Override
             public void onResponse(JSONObject response) {
-                String user;
-                String pwd;
-                try {
-                    user = response.getString("username");
-                    pwd = response.getString("password");
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
+                Log.d(TAG, "Response: " + response.toString());
+                Log.e("Rest response", response.toString());
+                Log.d(TAG, "Response: gauta ");
+//                String user2;
+//                String pwd2;
+//                try {
+//                    user2 = response.getString("username");
+//                    pwd2 = response.getString("password");
+//                } catch (JSONException e) {
+//                    e.printStackTrace();
+//                }
 
 
             }
         }, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error) {
+                Log.e("Error response", error.toString());
 
             }
         });
         rq.add(jsonObjectRequest);
 
+
     }
 
-    private String decrypt(String outputString, String password) throws Exception {
-        SecretKeySpec key = generateKey(password);
+
+
+
+
+
+
+    private String decrypt(String outputString, String raktas) throws Exception {
+        SecretKeySpec key = generateKey(raktas);
         Cipher c = Cipher.getInstance(AES);
         c.init(Cipher.DECRYPT_MODE, key);
         byte[] decodedValue = android.util.Base64.decode(outputString, android.util.Base64.DEFAULT);
@@ -229,8 +282,8 @@ public class RegisterActivity extends AppCompatActivity {
         return decryptedValue;
     }
 
-    private String encrypt(String Data, String password) throws Exception {
-        SecretKeySpec key = generateKey(password);
+    private String encrypt(String Data, String raktas) throws Exception {
+        SecretKeySpec key = generateKey(raktas);
         Cipher c = Cipher.getInstance(AES);
         c.init(Cipher.ENCRYPT_MODE, key);
         byte[] encVal = c.doFinal(Data.getBytes());
