@@ -51,27 +51,27 @@ public class RegisterActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_register);
 
-        RequestQueue requestQueue = Volley.newRequestQueue(this);
-        String URL = "http://78.60.2.145:8001/registracija2/";;
-        final String TAG ="RegisterActivity";
-        JsonObjectRequest objectRequest = new JsonObjectRequest(
-                Request.Method.GET,
-                URL,
-                null,
-                new Response.Listener<JSONObject>() {
-                    @Override
-                    public void onResponse(JSONObject response) {
-                        Log.d(TAG, "Response: " + response.toString());
-                    }
-                },
-                new Response.ErrorListener() {
-                    @Override
-                    public void onErrorResponse(VolleyError error) {
-                        Log.e("Rest Response", error.toString());
-                    }
-                }
-        );
-        requestQueue.add(objectRequest);
+//        RequestQueue requestQueue = Volley.newRequestQueue(this);
+//        String URL = "http://78.60.2.145:8001/registracija2/";;
+//        final String TAG ="RegisterActivity";
+//        JsonObjectRequest objectRequest = new JsonObjectRequest(
+//                Request.Method.GET,
+//                URL,
+//                null,
+//                new Response.Listener<JSONObject>() {
+//                    @Override
+//                    public void onResponse(JSONObject response) {
+//                        Log.d(TAG, "pirma: " + response.toString());
+//                    }
+//                },
+//                new Response.ErrorListener() {
+//                    @Override
+//                    public void onErrorResponse(VolleyError error) {
+//                        Log.e("Rest Response", error.toString());
+//                    }
+//                }
+//        );
+//        requestQueue.add(objectRequest);
 
 
         //SIUNTIMUI IR SERVA
@@ -163,6 +163,7 @@ public class RegisterActivity extends AppCompatActivity {
                             // $FF: bridge method
                             public void onResponse(Object var1) {
                                 this.onResponse((JSONObject)var1);
+                                //Log.d(TAG, "Response: " + var1.toString());
                             }
 
                             public final void onResponse(JSONObject response) {
@@ -174,6 +175,7 @@ public class RegisterActivity extends AppCompatActivity {
                                 //String var10001 = String.format(var2, Arrays.copyOf(var3, var3.length));
                                 //Intrinsics.checkNotNullExpressionValue(var10001, "java.lang.String.format(this, *args)");
                                 //var10000.setText((CharSequence)var10001);
+                                //Log.d(TAG, "Response: " + response.toString());
                             }
                         }), (Response.ErrorListener)(new Response.ErrorListener() {
                             public final void onErrorResponse(VolleyError error) {
@@ -233,38 +235,38 @@ public class RegisterActivity extends AppCompatActivity {
 
     }
 
-    public void sendjsonrequest(){
-
-        final String url = "http://78.60.2.145:8001/registracija2/";
-        final String TAG ="RegisterActivity";
-        JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.GET, url, null, new Response.Listener<JSONObject>() {
-            @Override
-            public void onResponse(JSONObject response) {
-                Log.d(TAG, "Response: " + response.toString());
-                Log.e("Rest response", response.toString());
-                Log.d(TAG, "Response: gauta ");
-//                String user2;
-//                String pwd2;
-//                try {
-//                    user2 = response.getString("username");
-//                    pwd2 = response.getString("password");
-//                } catch (JSONException e) {
-//                    e.printStackTrace();
-//                }
-
-
-            }
-        }, new Response.ErrorListener() {
-            @Override
-            public void onErrorResponse(VolleyError error) {
-                Log.e("Error response", error.toString());
-
-            }
-        });
-        rq.add(jsonObjectRequest);
-
-
-    }
+//    public void sendjsonrequest(){
+//
+//        final String url = "http://78.60.2.145:8001/registracija2/";
+//        final String TAG ="RegisterActivity";
+//        JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(1, url, null, new Response.Listener<JSONObject>() {
+//            @Override
+//            public void onResponse(JSONObject response) {
+//                Log.d(TAG, "Response: " + response.toString());
+//                Log.e("Rest response", response.toString());
+//                Log.d(TAG, "Response: gauta ");
+////                String user2;
+////                String pwd2;
+////                try {
+////                    user2 = response.getString("username");
+////                    pwd2 = response.getString("password");
+////                } catch (JSONException e) {
+////                    e.printStackTrace();
+////                }
+//
+//
+//            }
+//        }, new Response.ErrorListener() {
+//            @Override
+//            public void onErrorResponse(VolleyError error) {
+//                Log.e("Error response", error.toString());
+//
+//            }
+//        });
+//        rq.add(jsonObjectRequest);
+//
+//
+//    }
 
 
 
