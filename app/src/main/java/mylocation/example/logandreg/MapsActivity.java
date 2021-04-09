@@ -71,6 +71,8 @@ import java.util.Formatter;
 import java.util.List;
 import java.util.Locale;
 
+import static mylocation.example.logandreg.MainActivity.ats;
+
 public class MapsActivity extends AppCompatActivity implements OnMapReadyCallback, GoogleMap.OnMapLongClickListener,
         GoogleMap.OnMarkerDragListener, LocationListener, SensorEventListener {
 
@@ -182,6 +184,11 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
 //        yValue = (TextView) findViewById(R.id.yValue);
 //        zValue = (TextView) findViewById(R.id.zValue);
 
+
+
+        Intent intent = getIntent();
+        int ats =  intent.getIntExtra(MainActivity.EXTRA_NUMBER,0);
+        Log.d(TAG, "GAUTAS!!! " + ats);
 
         // logout
 
@@ -556,15 +563,17 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
                     longitude = (float) location.getLongitude();
 
 
+
+
                     final JSONObject req_data = new JSONObject();
                     try {
-                        req_data.put("id", "1");
+                        req_data.put("userid", ats);
                         req_data.put("latitude", latitude);
                         req_data.put("longitude", longitude);
                     } catch (JSONException e) {
                         e.printStackTrace();
                     }
-
+                   Log.d(TAG, "NAUDOJAMAS@@@@ " + ats);
 
                     JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(1, url, req_data, (Response.Listener) (new Response.Listener() {
                         // $FF: synthetic method

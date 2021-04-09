@@ -44,6 +44,8 @@ public class MainActivity extends AppCompatActivity {
 
     private StringRequest request;
 
+    static int ats;
+    public static final String EXTRA_NUMBER = "mylocation.example.logandreg.EXTRA_NUMBER";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -90,42 +92,40 @@ public class MainActivity extends AppCompatActivity {
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
-
-
+           
                 RequestQueue requestQueue = Volley.newRequestQueue(MainActivity.this);
                 String URL = "http://78.60.2.145:8001/registracija2/";;
                 final String TAG ="MainActivity";
-                JsonObjectRequest objectRequest = new JsonObjectRequest(
-                        Request.Method.POST,
-                        URL,
-                        req_data,
-                        new Response.Listener<JSONObject>() {
-                            @Override
-                            public void onResponse(JSONObject response) {
-                                try {
-                                    JSONObject jsonObject = new JSONObject(response.toString());
-                                   // if(jsonObject.names().get(0).equals("id")){
-                                        Toast.makeText(MainActivity.this, "Successfully logged in", Toast.LENGTH_SHORT).show();
-                                        Intent mapsactivityIntent = new Intent (MainActivity.this, MapsActivity.class);
-                                        startActivity(mapsactivityIntent);
-                                        Log.d(TAG, "pirma: " + response.toString());
-                                    //}
+                JsonObjectRequest objectRequest = new JsonObjectRequest(Request.Method.POST, URL, req_data, new Response.Listener<JSONObject>() {
+                    @Override
+                    public void onResponse(JSONObject response) {
+                        try {
+                            JSONObject jsonObject = new JSONObject(response.toString());
+                            //JSONObject jsonobject1 = jsonObject.getJSONObject(response.toString());
+                            ats = jsonObject.getInt("id");;
+                            //Log.d(TAG, "objektas: " + response);
+                            Log.d(TAG, "objektas123: " + ats);
+                            // if(jsonObject.names().get(0).equals("id")){
+                            Toast.makeText(MainActivity.this, "Successfully logged in", Toast.LENGTH_SHORT).show();
+                            Intent mapsactivityIntent = new Intent (MainActivity.this, MapsActivity.class);
+                            mapsactivityIntent.putExtra(EXTRA_NUMBER, ats);
+                            startActivity(mapsactivityIntent);
+                            Log.d(TAG, "pirma: " + response.toString());
+                            //}
 
-                                } catch (JSONException e) {
-                                    e.printStackTrace();
-                                }
-//                                Log.d(TAG, "pirma: " + response.toString());
-                            }
-                        },
-                        new Response.ErrorListener() {
-                            @Override
-                            public void onErrorResponse(VolleyError error) {
-                                Log.d(TAG, "Rest Response: " + error.toString());
-                            }
+                        } catch (JSONException e) {
+                            e.printStackTrace();
                         }
-                );
+//                                Log.d(TAG, "pirma: " + response.toString());
+                    }
+                }, new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        Log.d(TAG, "Rest Response: " + error.toString());
+                        Toast.makeText(MainActivity.this, "Login Error", Toast.LENGTH_SHORT).show();
+                    }
+                });
                 requestQueue.add(objectRequest);
-
 
                 ///testas
 //                request = new StringRequest(Request.Method.POST,
