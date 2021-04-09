@@ -16,6 +16,7 @@ import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
+import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 
 import org.json.JSONException;
@@ -40,6 +41,9 @@ public class MainActivity extends AppCompatActivity {
     String raktas = "burbuliukas";
     private static final String TAG ="MainActivity";
     // kodavimas
+
+    private StringRequest request;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -98,7 +102,19 @@ public class MainActivity extends AppCompatActivity {
                         new Response.Listener<JSONObject>() {
                             @Override
                             public void onResponse(JSONObject response) {
-                                Log.d(TAG, "pirma: " + response.toString());
+                                try {
+                                    JSONObject jsonObject = new JSONObject(response.toString());
+                                   // if(jsonObject.names().get(0).equals("id")){
+                                        Toast.makeText(MainActivity.this, "Successfully logged in", Toast.LENGTH_SHORT).show();
+                                        Intent mapsactivityIntent = new Intent (MainActivity.this, MapsActivity.class);
+                                        startActivity(mapsactivityIntent);
+                                        Log.d(TAG, "pirma: " + response.toString());
+                                    //}
+
+                                } catch (JSONException e) {
+                                    e.printStackTrace();
+                                }
+//                                Log.d(TAG, "pirma: " + response.toString());
                             }
                         },
                         new Response.ErrorListener() {
@@ -111,24 +127,67 @@ public class MainActivity extends AppCompatActivity {
                 requestQueue.add(objectRequest);
 
 
+                ///testas
+//                request = new StringRequest(Request.Method.POST,
+//                        URL,
+//                        new Response.Listener<String>() {
+//                    @Override
+//                    public void onResponse(String response) {
+//                        try {
+//                            JSONObject jsonObject = new JSONObject(response);
+//                            if(jsonObject.names().get(0).equals("id")){
+//                                Toast.makeText(getApplicationContext(),"SUCCESS "+jsonObject.getString("id"),Toast.LENGTH_SHORT).show();
+//                                startActivity(new Intent(getApplicationContext(),MapsActivity.class));
+//                                Log.d(TAG, "pirma: " + response.toString());
+//                            }else {
+//                                Toast.makeText(getApplicationContext(), "Error" +jsonObject.getString("error"), Toast.LENGTH_SHORT).show();
+//                            }
+//
+//                        } catch (JSONException e) {
+//                            e.printStackTrace();
+//                        }
+//
+//
+//                    }
+//                }, new Response.ErrorListener() {
+//                    @Override
+//                    public void onErrorResponse(VolleyError error) {
+//                        Log.d(TAG, "Rest Response: " + error.toString());
+//
+//                    }
+//                }){
+//                    @Override
+//                    protected Map<String, String> getParams() throws AuthFailureError {
+//                        HashMap<String,String> hashMap = new HashMap<String, String>();
+//                        hashMap.put("username",mTextUsername.getText().toString().trim());
+//                        hashMap.put("password",mTextPassword.getText().toString().trim());
+//
+//                        return hashMap;
+//                    }
+//                };
+//
+//                requestQueue.add(request);
+                ////
 
 
 
 
 
 
-                Boolean res = db.checkUser(user, pwd);
-                if(res == true)
-                {
-                    Toast.makeText(MainActivity.this, "Successfully logged in", Toast.LENGTH_SHORT).show();
-                    Intent mapsactivityIntent = new Intent (MainActivity.this, MapsActivity.class);
-                    startActivity(mapsactivityIntent);
-                }
-                else
-                {
-                    Toast.makeText(MainActivity.this, "Login Error", Toast.LENGTH_SHORT).show();
 
-                }
+
+//                Boolean res = db.checkUser(user, pwd);
+//                if(res == true)
+//                {
+//                    Toast.makeText(MainActivity.this, "Successfully logged in", Toast.LENGTH_SHORT).show();
+//                    Intent mapsactivityIntent = new Intent (MainActivity.this, MapsActivity.class);
+//                    startActivity(mapsactivityIntent);
+//                }
+//                else
+//                {
+//                    Toast.makeText(MainActivity.this, "Login Error", Toast.LENGTH_SHORT).show();
+//
+//                }
             }
         });
 
