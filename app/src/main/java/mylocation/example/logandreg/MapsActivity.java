@@ -72,6 +72,7 @@ import java.util.List;
 import java.util.Locale;
 
 import static mylocation.example.logandreg.MainActivity.ats;
+import static mylocation.example.logandreg.MainActivity.kelione;
 
 public class MapsActivity extends AppCompatActivity implements OnMapReadyCallback, GoogleMap.OnMapLongClickListener,
         GoogleMap.OnMarkerDragListener, LocationListener, SensorEventListener {
@@ -102,6 +103,8 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
     TextView xValue, yValue, zValue;
 
     boolean detection_state = false;
+
+    int tripid=0;
 
     private Handler mHandler = new Handler();
 
@@ -188,7 +191,9 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
 
         Intent intent = getIntent();
         int ats =  intent.getIntExtra(MainActivity.EXTRA_NUMBER,0);
+        int kelione =  intent.getIntExtra(MainActivity.EXTRA_NUMBER_KID,0);
         Log.d(TAG, "GAUTAS!!! " + ats);
+        Log.d(TAG, "GAUTAS!!! " + kelione);
 
         // logout
 
@@ -244,7 +249,9 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
                     //button.setBackgroundColor(getResources().getColor(greenTranslucent));
                     Toast.makeText(MapsActivity.this, "Started", Toast.LENGTH_LONG).show();
                     detection_state = true;
-                    Log.d(TAG, "start trip");;
+                    Log.d(TAG, "start trip");
+                    MainActivity.kelione = MainActivity.kelione + 1;
+//                    tripid = tripid + 1;
 //                    MapsActivity.this.onLocationChanged(null);
 //                    while(detection_state){
 //                    }
@@ -567,6 +574,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
 
                     final JSONObject req_data = new JSONObject();
                     try {
+                        req_data.put("tripid", kelione);
                         req_data.put("userid", ats);
                         req_data.put("latitude", latitude);
                         req_data.put("longitude", longitude);
@@ -646,14 +654,15 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         if(location != null) {
             location.setUseMetricUnits(this.useMetricUnits());
             nCurrentSpeed = location.getSpeed();
-            Log.d(TAG, "updateSpeed: " + location.getSpeed());
+            //Log.d(TAG, "updateSpeed: " + location.getSpeed());
 
 
             /// GREITIS ///
             if (detection_state == true) {
                 final JSONObject req_data = new JSONObject();
                 try {
-                    req_data.put("id", "1");
+                    req_data.put("tripid", kelione);
+                    req_data.put("userid", ats);
                     req_data.put("speed", nCurrentSpeed);
                 } catch (JSONException e) {
                     e.printStackTrace();

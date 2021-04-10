@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
+import android.util.Patterns;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -30,6 +31,7 @@ import javax.crypto.spec.SecretKeySpec;
 public class RegisterActivity extends AppCompatActivity {
     DatabaseHelper db;
     EditText mTextUsername;
+    EditText mTextEmail;
     EditText mTextPassword;
     EditText mTextCnfPassword;
     Button mButtonRegister;
@@ -51,28 +53,6 @@ public class RegisterActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_register);
 
-//        RequestQueue requestQueue = Volley.newRequestQueue(this);
-//        String URL = "http://78.60.2.145:8001/registracija2/";;
-//        final String TAG ="RegisterActivity";
-//        JsonObjectRequest objectRequest = new JsonObjectRequest(
-//                Request.Method.GET,
-//                URL,
-//                null,
-//                new Response.Listener<JSONObject>() {
-//                    @Override
-//                    public void onResponse(JSONObject response) {
-//                        Log.d(TAG, "pirma: " + response.toString());
-//                    }
-//                },
-//                new Response.ErrorListener() {
-//                    @Override
-//                    public void onErrorResponse(VolleyError error) {
-//                        Log.e("Rest Response", error.toString());
-//                    }
-//                }
-//        );
-//        requestQueue.add(objectRequest);
-
 
         //SIUNTIMUI IR SERVA
         Button btn = (Button)this.findViewById(R.id.button);
@@ -80,19 +60,10 @@ public class RegisterActivity extends AppCompatActivity {
         final RequestQueue queue = Volley.newRequestQueue((Context)this);
         final String url = "http://78.60.2.145:8001/registracija/";
 
-//        final JSONObject req_data = new JSONObject();
-//        try {
-//            req_data.put("id", "1");
-//            req_data.put("username", mTextUsername);
-//            req_data.put("password", mTextPassword);
-//        } catch (JSONException e) {
-//            e.printStackTrace();
-//        }
-        /////
-
 
         db = new DatabaseHelper(this);
         mTextUsername = (EditText)findViewById(R.id.eidttext_username);
+        mTextEmail = (EditText)findViewById(R.id.eidttext_email);
         mTextPassword = (EditText)findViewById(R.id.edittext_password);
         mTextCnfPassword = (EditText)findViewById(R.id.edittext_cnf_password);
         mButtonRegister = (Button) findViewById(R.id.button_register);
@@ -110,6 +81,7 @@ public class RegisterActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 String user = mTextUsername.getText().toString().trim();
+                String email = mTextEmail.getText().toString().trim();
 //                try {
 //                    user = encrypt(mTextUsername.getText().toString().trim(), mTextPassword.getText().toString().trim());
 //                    //outputText.setText(user);
@@ -146,12 +118,13 @@ public class RegisterActivity extends AppCompatActivity {
                 try {
                     req_data.put("id", "1");
                     req_data.put("username", user);
+                    req_data.put("email", email);
                     req_data.put("password", pwd);
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
 
-                if(pwd.equals(cnf_pwd)){
+                if(pwd.equals(cnf_pwd) && validateEmailAddress(mTextEmail) == true && validatePassword(mTextPassword) == true && validateUsername(mTextUsername)){
                     long val = db.addUser(user,pwd);
                     if(val > 0){
                     Toast.makeText(RegisterActivity.this, "You have registered", Toast.LENGTH_SHORT).show();
@@ -159,29 +132,14 @@ public class RegisterActivity extends AppCompatActivity {
                     startActivity(moveToLogin);
 
                         JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(1, url, req_data, (Response.Listener)(new Response.Listener() {
-                            // $FF: synthetic method
-                            // $FF: bridge method
                             public void onResponse(Object var1) {
                                 this.onResponse((JSONObject)var1);
-                                //Log.d(TAG, "Response: " + var1.toString());
                             }
 
                             public final void onResponse(JSONObject response) {
-                                //TextView var10000 = txt;
-                                //Intrinsics.checkNotNullExpressionValue(var10000, "txt");
-                                //String var2 = "Response: %s";
-                                //Object[] var3 = new Object[]{response.toString()};
-                                //boolean var4 = false;
-                                //String var10001 = String.format(var2, Arrays.copyOf(var3, var3.length));
-                                //Intrinsics.checkNotNullExpressionValue(var10001, "java.lang.String.format(this, *args)");
-                                //var10000.setText((CharSequence)var10001);
-                                //Log.d(TAG, "Response: " + response.toString());
                             }
                         }), (Response.ErrorListener)(new Response.ErrorListener() {
                             public final void onErrorResponse(VolleyError error) {
-                                //TextView var10000 = txt;
-                                //Intrinsics.checkNotNullExpressionValue(var10000, "txt");
-                                //var10000.setText((CharSequence)error.toString());
                             }
                         }));
                         queue.add((Request)jsonObjectRequest);
@@ -197,12 +155,18 @@ public class RegisterActivity extends AppCompatActivity {
 
                     }
                 }
-                else{
+//                else{
+//                    Toast.makeText(RegisterActivity.this, "Password is not matching", Toast.LENGTH_SHORT).show();
+//
+//                }
+                if(!pwd.equals(cnf_pwd)){
                     Toast.makeText(RegisterActivity.this, "Password is not matching", Toast.LENGTH_SHORT).show();
 
                 }
+
             }
         });
+
 
 
 
@@ -226,52 +190,41 @@ public class RegisterActivity extends AppCompatActivity {
         }
 
 
-        //JSON FETCHING
-//        rq = Volley.newRequestQueue(this);
-//        sendjsonrequest();
-        //
-
-
 
     }
 
-//    public void sendjsonrequest(){
-//
-//        final String url = "http://78.60.2.145:8001/registracija2/";
-//        final String TAG ="RegisterActivity";
-//        JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(1, url, null, new Response.Listener<JSONObject>() {
-//            @Override
-//            public void onResponse(JSONObject response) {
-//                Log.d(TAG, "Response: " + response.toString());
-//                Log.e("Rest response", response.toString());
-//                Log.d(TAG, "Response: gauta ");
-////                String user2;
-////                String pwd2;
-////                try {
-////                    user2 = response.getString("username");
-////                    pwd2 = response.getString("password");
-////                } catch (JSONException e) {
-////                    e.printStackTrace();
-////                }
-//
-//
-//            }
-//        }, new Response.ErrorListener() {
-//            @Override
-//            public void onErrorResponse(VolleyError error) {
-//                Log.e("Error response", error.toString());
-//
-//            }
-//        });
-//        rq.add(jsonObjectRequest);
-//
-//
-//    }
+    private boolean validateEmailAddress (EditText mTextEmail){
+        String emailinput = mTextEmail.getText().toString();
 
+        if(!emailinput.isEmpty() && Patterns.EMAIL_ADDRESS.matcher(emailinput).matches()){
+            return true;
+        }else{
+            Toast.makeText(this,"Invalid Email Address",Toast.LENGTH_SHORT).show();
+            return false;
+        }
+    }
 
+    private boolean validatePassword (EditText mTextPassword){
+        String passwordinput = mTextPassword.getText().toString();
 
+        if(passwordinput.isEmpty()){
+            Toast.makeText(this,"Password field cannot be empty",Toast.LENGTH_SHORT).show();
+            return false;
+        }else{
+            return true;
+        }
+    }
 
+    private boolean validateUsername (EditText mTextUsername){
+        String usernameinput = mTextUsername.getText().toString();
 
+        if(usernameinput.isEmpty()){
+            Toast.makeText(this,"Username field cannot be empty",Toast.LENGTH_SHORT).show();
+            return false;
+        }else{
+            return true;
+        }
+    }
 
 
     private String decrypt(String outputString, String raktas) throws Exception {

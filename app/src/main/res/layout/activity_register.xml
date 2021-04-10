@@ -9,13 +9,20 @@
     tools:context=".RegisterActivity">
 
 
+    <ImageView
+        android:id="@+id/imageview"
+        android:layout_width="344dp"
+        android:layout_height="181dp"
+        android:layout_marginTop="10dp"
+        android:src="@drawable/undraw_personal_info_0okl" />
+
     <TextView
         android:id="@+id/textViewlogup"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Register"
         android:textSize="50sp"
-        android:layout_marginTop="125dp"
+        android:layout_marginTop="10dp"
         android:textStyle="bold|italic"
         />
 
@@ -23,15 +30,25 @@
         android:id="@+id/eidttext_username"
         android:layout_width="190dp"
         android:layout_height="40dp"
-        android:layout_marginTop="50dp"
+        android:layout_marginTop="30dp"
         android:background="#ffffff"
         android:drawableLeft="@drawable/ic_baseline"
         android:hint="@string/username" />
 
     <EditText
+        android:id="@+id/eidttext_email"
+        android:layout_width="190dp"
+        android:layout_height="40dp"
+        android:layout_marginTop="20dp"
+        android:background="#ffffff"
+        android:drawableLeft="@drawable/ic_email"
+        android:hint="@string/email"
+        android:inputType="textEmailAddress" />
+
+    <EditText
         android:id="@+id/edittext_password"
         android:layout_width="190dp"
-        android:layout_height="35dp"
+        android:layout_height="40dp"
         android:layout_marginTop="20dp"
         android:background="#ffffff"
         android:drawableLeft="@drawable/ic_baseline_security_24"
@@ -41,7 +58,7 @@
     <EditText
         android:id="@+id/edittext_cnf_password"
         android:layout_width="190dp"
-        android:layout_height="35dp"
+        android:layout_height="40dp"
         android:layout_marginTop="20dp"
         android:background="#ffffff"
         android:drawableLeft="@drawable/ic_baseline_security_24"

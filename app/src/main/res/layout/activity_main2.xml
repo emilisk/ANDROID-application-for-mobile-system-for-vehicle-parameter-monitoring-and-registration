@@ -14,7 +14,7 @@
         android:layout_height="wrap_content"
         android:text="@string/welcome"
         android:textSize="50sp"
-        android:layout_marginTop="125dp"
+        android:layout_marginTop="80dp"
         android:textStyle="bold|italic"
         />
 
@@ -23,7 +23,7 @@
         android:layout_width="150dp"
         android:layout_height="80dp"
         android:text="@string/login2"
-        android:layout_marginTop="50dp"
+        android:layout_marginTop="40dp"
         />
 
         <TextView
@@ -31,7 +31,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/or"
-            android:layout_marginTop="50dp"
+            android:layout_marginTop="25dp"
             />
 
     <Button
@@ -39,6 +39,12 @@
         android:layout_width="150dp"
         android:layout_height="80dp"
         android:text="@string/register2"
-        android:layout_marginTop="60dp"
+        android:layout_marginTop="25dp"
         />
+
+    <ImageView
+        android:id="@+id/imageview"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:src="@drawable/undraw_off_road_9oae"/>
 </LinearLayout>

@@ -45,7 +45,9 @@ public class MainActivity extends AppCompatActivity {
     private StringRequest request;
 
     static int ats;
+    static int kelione;
     public static final String EXTRA_NUMBER = "mylocation.example.logandreg.EXTRA_NUMBER";
+    public static final String EXTRA_NUMBER_KID = "mylocation.example.logandreg.EXTRA_NUMBER_KID";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -102,13 +104,16 @@ public class MainActivity extends AppCompatActivity {
                         try {
                             JSONObject jsonObject = new JSONObject(response.toString());
                             //JSONObject jsonobject1 = jsonObject.getJSONObject(response.toString());
-                            ats = jsonObject.getInt("id");;
+                            ats = jsonObject.getInt("id");
+                            kelione = jsonObject.getInt("tripid");
                             //Log.d(TAG, "objektas: " + response);
                             Log.d(TAG, "objektas123: " + ats);
+                            Log.d(TAG, "keliones id: " + kelione);
                             // if(jsonObject.names().get(0).equals("id")){
                             Toast.makeText(MainActivity.this, "Successfully logged in", Toast.LENGTH_SHORT).show();
                             Intent mapsactivityIntent = new Intent (MainActivity.this, MapsActivity.class);
                             mapsactivityIntent.putExtra(EXTRA_NUMBER, ats);
+                            mapsactivityIntent.putExtra(EXTRA_NUMBER_KID, kelione);
                             startActivity(mapsactivityIntent);
                             Log.d(TAG, "pirma: " + response.toString());
                             //}
@@ -126,51 +131,6 @@ public class MainActivity extends AppCompatActivity {
                     }
                 });
                 requestQueue.add(objectRequest);
-
-                ///testas
-//                request = new StringRequest(Request.Method.POST,
-//                        URL,
-//                        new Response.Listener<String>() {
-//                    @Override
-//                    public void onResponse(String response) {
-//                        try {
-//                            JSONObject jsonObject = new JSONObject(response);
-//                            if(jsonObject.names().get(0).equals("id")){
-//                                Toast.makeText(getApplicationContext(),"SUCCESS "+jsonObject.getString("id"),Toast.LENGTH_SHORT).show();
-//                                startActivity(new Intent(getApplicationContext(),MapsActivity.class));
-//                                Log.d(TAG, "pirma: " + response.toString());
-//                            }else {
-//                                Toast.makeText(getApplicationContext(), "Error" +jsonObject.getString("error"), Toast.LENGTH_SHORT).show();
-//                            }
-//
-//                        } catch (JSONException e) {
-//                            e.printStackTrace();
-//                        }
-//
-//
-//                    }
-//                }, new Response.ErrorListener() {
-//                    @Override
-//                    public void onErrorResponse(VolleyError error) {
-//                        Log.d(TAG, "Rest Response: " + error.toString());
-//
-//                    }
-//                }){
-//                    @Override
-//                    protected Map<String, String> getParams() throws AuthFailureError {
-//                        HashMap<String,String> hashMap = new HashMap<String, String>();
-//                        hashMap.put("username",mTextUsername.getText().toString().trim());
-//                        hashMap.put("password",mTextPassword.getText().toString().trim());
-//
-//                        return hashMap;
-//                    }
-//                };
-//
-//                requestQueue.add(request);
-                ////
-
-
-
 
 
 
