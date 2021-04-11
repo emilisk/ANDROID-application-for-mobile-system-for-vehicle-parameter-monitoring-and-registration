@@ -67,6 +67,8 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.IOException;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.Formatter;
 import java.util.List;
 import java.util.Locale;
@@ -96,11 +98,12 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
     ToggleButton mygtukas;
     //
 
+
     //Akselerometras
     SensorManager sensorManager;
     Sensor accelerometer;
 
-    TextView xValue, yValue, zValue;
+    double ax, ay, az;
 
     boolean detection_state = false;
 
@@ -159,6 +162,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
             }
         }
         return super.onOptionsItemSelected(item);
+
     }
 
     @Override
@@ -182,6 +186,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         sw_metric = findViewById(R.id.sw_metric);
         tv_speed = findViewById(R.id.tv_speed);
 
+
         //Akselerometras
 //        xValue = (TextView) findViewById(R.id.xValue);
 //        yValue = (TextView) findViewById(R.id.yValue);
@@ -192,11 +197,13 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         Intent intent = getIntent();
         int ats =  intent.getIntExtra(MainActivity.EXTRA_NUMBER,0);
         int kelione =  intent.getIntExtra(MainActivity.EXTRA_NUMBER_KID,0);
-        Log.d(TAG, "GAUTAS!!! " + ats);
-        Log.d(TAG, "GAUTAS!!! " + kelione);
 
-        // logout
 
+        // TIME AND DATE
+        Calendar calendar = Calendar.getInstance();
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
+        String dateTime = simpleDateFormat.format(calendar.getTime());
+        Log.d(TAG, "DATA: " + dateTime);
         //
 
         //bottom menu
@@ -309,10 +316,6 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         mMap.setOnMarkerDragListener(this);
 
 
-//        final String url = "http://78.60.2.145:8001/speed/";
-//        final RequestQueue queue = Volley.newRequestQueue((Context)this);
-
-
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager
         .PERMISSION_GRANTED) {
             //enableUserLocation();
@@ -327,6 +330,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
                         ACCESS_LOCATION_REQUEST_CODE);
             }
         }
+
 
 
         // Add a marker in Sydney and move the camera
@@ -354,56 +358,16 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
             e.printStackTrace();
         }
 
+
     }
 
     LocationCallback locationCallback = new LocationCallback(){
         @Override
         public void onLocationResult(LocationResult locationResult) {
             super.onLocationResult(locationResult);
-            Log.d(TAG, "onLocationResult: " + locationResult.getLastLocation());
+//            Log.d(TAG, "onLocationResult: " + locationResult.getLastLocation());
             if (mMap != null){
                 setUserLocationMarker(locationResult.getLastLocation());
-
-//                final String url = "http://78.60.2.145:8001/location/";
-//                final RequestQueue queue = Volley.newRequestQueue((Context)MapsActivity.this);
-//
-//                final JSONObject req_data = new JSONObject();
-//                try {
-//                    req_data.put("id", "1");
-//                    req_data.put("latitude", locationResult.getLastLocation());
-//                    req_data.put("longitude", locationResult.getLastLocation());
-//                } catch (JSONException e) {
-//                    e.printStackTrace();
-//                }
-//
-//                JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(1, url, req_data, (Response.Listener)(new Response.Listener() {
-//                    // $FF: synthetic method
-//                    // $FF: bridge method
-//                    public void onResponse(Object var1) {
-//                        this.onResponse((JSONObject)var1);
-//                    }
-//
-//                    public final void onResponse(JSONObject response) {
-//                        //TextView var10000 = txt;
-//                        //Intrinsics.checkNotNullExpressionValue(var10000, "txt");
-//                        //String var2 = "Response: %s";
-//                        //Object[] var3 = new Object[]{response.toString()};
-//                        //boolean var4 = false;
-//                        //String var10001 = String.format(var2, Arrays.copyOf(var3, var3.length));
-//                        //Intrinsics.checkNotNullExpressionValue(var10001, "java.lang.String.format(this, *args)");
-//                        //var10000.setText((CharSequence)var10001);
-//                    }
-//                }), (Response.ErrorListener)(new Response.ErrorListener() {
-//                    public final void onErrorResponse(VolleyError error) {
-//                        //TextView var10000 = txt;
-//                        //Intrinsics.checkNotNullExpressionValue(var10000, "txt");
-//                        //var10000.setText((CharSequence)error.toString());
-//                    }
-//                }));
-//                queue.add((Request)jsonObjectRequest);
-//
-//
-//
             }
         }
     };
@@ -561,16 +525,49 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
                 CLocation myLocation = new CLocation(location, this.useMetricUnits());
                 this.updateSpeed(myLocation);
 
-                if (detection_state == true) {
-                    Log.d(TAG, "onLocationResult: " + location.getLatitude());
-                    Log.d(TAG, "onLocationResult: " + location.getLongitude());
-
+                if (detection_state == true ) {
+//                    Log.d(TAG, "onLocationResult: " + location.getLatitude());
+//                    Log.d(TAG, "onLocationResult: " + location.getLongitude());
 
                     latitude = (float) location.getLatitude();
                     longitude = (float) location.getLongitude();
 
+                    Calendar calendar = Calendar.getInstance();
+                    SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
+                    String dateTime = simpleDateFormat.format(calendar.getTime());
+
+                    final JSONObject req_data = new JSONObject();
+                    try {
+                        req_data.put("tripid", kelione);
+                        req_data.put("userid", ats);
+                        req_data.put("latitude", latitude);
+                        req_data.put("longitude", longitude);
+                        req_data.put("laikas", dateTime);
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+
+                    JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(1, url, req_data, (Response.Listener) (new Response.Listener() {
+                        public void onResponse(Object var1) {
+                            this.onResponse((JSONObject) var1);
+                        }
+
+                        public final void onResponse(JSONObject response) {
+                        }
+                    }), (Response.ErrorListener) (new Response.ErrorListener() {
+                        public final void onErrorResponse(VolleyError error) {
+                        }
+                    }));
+                    queue.add((Request) jsonObjectRequest);
+                }
+                
+
+                if (detection_state == true && (ay > 0.05)) {
 
 
+                    final String url2 = "http://78.60.2.145:8001/duobes/";
+                    latitude = (float) location.getLatitude();
+                    longitude = (float) location.getLongitude();
 
                     final JSONObject req_data = new JSONObject();
                     try {
@@ -581,34 +578,28 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
                     } catch (JSONException e) {
                         e.printStackTrace();
                     }
-                   Log.d(TAG, "NAUDOJAMAS@@@@ " + ats);
+                    Log.d(TAG, "Akselerometras x siuncia: " + ax);
+                    Log.d(TAG, "Akselerometras y siuncia: " + ay);
+                    Log.d(TAG, "Akselerometras z siuncia: " + az);
 
-                    JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(1, url, req_data, (Response.Listener) (new Response.Listener() {
-                        // $FF: synthetic method
-                        // $FF: bridge method
+                    JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(1, url2, req_data, (Response.Listener) (new Response.Listener() {
                         public void onResponse(Object var1) {
                             this.onResponse((JSONObject) var1);
                         }
 
                         public final void onResponse(JSONObject response) {
-                            //TextView var10000 = txt;
-                            //Intrinsics.checkNotNullExpressionValue(var10000, "txt");
-                            //String var2 = "Response: %s";
-                            //Object[] var3 = new Object[]{response.toString()};
-                            //boolean var4 = false;
-                            //String var10001 = String.format(var2, Arrays.copyOf(var3, var3.length));
-                            //Intrinsics.checkNotNullExpressionValue(var10001, "java.lang.String.format(this, *args)");
-                            //var10000.setText((CharSequence)var10001);
                         }
                     }), (Response.ErrorListener) (new Response.ErrorListener() {
                         public final void onErrorResponse(VolleyError error) {
-                            //TextView var10000 = txt;
-                            //Intrinsics.checkNotNullExpressionValue(var10000, "txt");
-                            //var10000.setText((CharSequence)error.toString());
                         }
                     }));
                     queue.add((Request) jsonObjectRequest);
                 }
+
+
+
+
+
             }
                     }
 
@@ -722,11 +713,10 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
 
     @Override
     public void onSensorChanged(SensorEvent sensorEvent) {
-        Log.d(TAG, "onSensorChanged: X: " +sensorEvent.values[0] + "Y: " + sensorEvent.values[1] + "Z: " + sensorEvent.values[2]);
-
-//        xValue.setText("xValue:" + sensorEvent.values[0]);
-//        yValue.setText("yValue:" + sensorEvent.values[1]);
-//        zValue.setText("zValue:" + sensorEvent.values[2]);
+//        Log.d(TAG, "onSensorChanged: X: " +sensorEvent.values[0] + "Y: " + sensorEvent.values[1] + "Z: " + sensorEvent.values[2]);
+        ax = sensorEvent.values[0];
+        ay = sensorEvent.values[1];
+        az = sensorEvent.values[2];
     }
 
         private static MapsActivity lastPausedActivity = null;
@@ -750,6 +740,47 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
             }
         }
 
+//        private void duobes(SensorEvent sensorEvent, Location location) {
+//
+//            Log.d(TAG, "onSensorChanged: X: " +sensorEvent.values[0] + "Y: " + sensorEvent.values[1] + "Z: " + sensorEvent.values[2]);
+//            ax = sensorEvent.values[0];
+//            ay = sensorEvent.values[1];
+//            az = sensorEvent.values[2];
+//
+//            float latitude = 0;
+//            float longitude = 0;
+//            final String url = "http://78.60.2.145:8001/location/";
+//            final RequestQueue queue = Volley.newRequestQueue((Context) this);
+//
+//            if (detection_state == true && (ax < -4.0 || ay < -4.0 || az < -4.0)) {
+//
+//                latitude = (float) location.getLatitude();
+//                longitude = (float) location.getLongitude();
+//
+//                final JSONObject req_data = new JSONObject();
+//                try {
+//                    req_data.put("tripid", kelione);
+//                    req_data.put("userid", ats);
+//                    req_data.put("latitude", latitude);
+//                    req_data.put("longitude", longitude);
+//                } catch (JSONException e) {
+//                    e.printStackTrace();
+//                }
+//
+//                JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(1, url, req_data, (Response.Listener) (new Response.Listener() {
+//                    public void onResponse(Object var1) {
+//                        this.onResponse((JSONObject) var1);
+//                    }
+//
+//                    public final void onResponse(JSONObject response) {
+//                    }
+//                }), (Response.ErrorListener) (new Response.ErrorListener() {
+//                    public final void onErrorResponse(VolleyError error) {
+//                    }
+//                }));
+//                queue.add((Request) jsonObjectRequest);
+//            }
+//        }
 
 
     ///
