@@ -1,10 +1,12 @@
 package mylocation.example.logandreg;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -49,10 +51,23 @@ public class MainActivity extends AppCompatActivity {
     public static final String EXTRA_NUMBER = "mylocation.example.logandreg.EXTRA_NUMBER";
     public static final String EXTRA_NUMBER_KID = "mylocation.example.logandreg.EXTRA_NUMBER_KID";
 
+
+    //Shared preferences
+    SharedPreferences sharedPreferences;
+    SharedPreferences.Editor editor;
+    Boolean savelogin;
+    CheckBox savelogincheckbox;
+    //
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        sharedPreferences = getSharedPreferences("loginref", MODE_PRIVATE);
+        savelogincheckbox = (CheckBox)findViewById(R.id.checkBox);
+        editor = sharedPreferences.edit();
+
 
         db = new DatabaseHelper(this);
         mTextUsername = (EditText)findViewById(R.id.eidttext_username);
@@ -72,18 +87,18 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View view) {
                 String user = mTextUsername.getText().toString().trim();
                 String pwd = mTextPassword.getText().toString().trim();
-                try {
-                    pwd = encrypt(mTextPassword.getText().toString().trim(), raktas);
-                    //outputText.setText(user);
-
-
-                    outputString = decrypt(pwd, raktas);
-                    Log.d(TAG, "onClick: " + pwd);
-                    Log.d(TAG, "onClick: " + outputString);
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-
+//                try {
+//                    pwd = encrypt(mTextPassword.getText().toString().trim(), raktas);
+//                    //outputText.setText(user);
+//
+//
+//                    outputString = decrypt(pwd, raktas);
+//                    Log.d(TAG, "onClick: " + pwd);
+//                    Log.d(TAG, "onClick: " + outputString);
+//                } catch (Exception e) {
+//                    e.printStackTrace();
+//                }
+//
 
 
 
@@ -110,6 +125,13 @@ public class MainActivity extends AppCompatActivity {
                             Log.d(TAG, "objektas123: " + ats);
                             Log.d(TAG, "keliones id: " + kelione);
                             // if(jsonObject.names().get(0).equals("id")){
+                            if(savelogincheckbox.isChecked()){
+                                editor.putBoolean("savelogin", true);
+                                editor.putString("username", user);
+                                editor.putString("password", pwd);
+                                editor.commit();
+                            }
+
                             Toast.makeText(MainActivity.this, "Successfully logged in", Toast.LENGTH_SHORT).show();
                             Intent mapsactivityIntent = new Intent (MainActivity.this, MapsActivity.class);
                             mapsactivityIntent.putExtra(EXTRA_NUMBER, ats);
@@ -150,6 +172,11 @@ public class MainActivity extends AppCompatActivity {
 //                }
             }
         });
+        savelogin = sharedPreferences.getBoolean("savelogin", true);
+        if(savelogin == true){
+            mTextUsername.setText(sharedPreferences.getString("username", null));
+            mTextPassword.setText(sharedPreferences.getString("password", null));
+        }
 
 
 

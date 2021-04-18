@@ -20,23 +20,16 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.Logandreg"
         android:usesCleartextTraffic="true">
-        <activity android:name=".About"></activity>
-        <activity android:name=".Profile" />
+        <activity android:name=".About"
+            android:theme="@style/Theme.Logandreg.NoActionBar"/>
+        <activity android:name=".Profile"
+            android:theme="@style/Theme.Logandreg.NoActionBar"/>
         <activity
             android:name=".Login"
             android:theme="@style/Theme.Design.Light.NoActionBar" />
         <activity
             android:name=".SignUp"
             android:theme="@style/Theme.Design.Light.NoActionBar">
-
-            <!-- <intent-filter> -->
-            <!-- <action android:name="android.intent.action.MAIN" /> -->
-
-
-            <!-- <category android:name="android.intent.category.LAUNCHER" /> -->
-            <!-- </intent-filter> -->
-        </activity>
-        <activity android:name=".Siuntimui">
 
             <!-- <intent-filter> -->
             <!-- <action android:name="android.intent.action.MAIN" /> -->
@@ -68,6 +61,7 @@
 
         <activity
             android:name=".MapsActivity"
+            android:theme="@style/Theme.Logandreg.NoActionBar"
             android:label="@string/title_activity_maps">
 
 <!--             <intent-filter>-->

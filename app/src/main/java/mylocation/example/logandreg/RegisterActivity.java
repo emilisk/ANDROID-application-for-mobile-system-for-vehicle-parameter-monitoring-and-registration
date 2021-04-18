@@ -3,7 +3,6 @@ package mylocation.example.logandreg;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
-import android.util.Log;
 import android.util.Patterns;
 import android.view.View;
 import android.widget.Button;
@@ -95,24 +94,24 @@ public class RegisterActivity extends AppCompatActivity {
 //                    e.printStackTrace();
 //                }
                 String pwd = mTextPassword.getText().toString().trim();
-                try {
-                    pwd = encrypt(mTextPassword.getText().toString().trim(), raktas);
-                    //outputText.setText(user);
-
-                    //
-                    outputString = decrypt(pwd, raktas);
-                    Log.d(TAG, "onClick: " + pwd);
-                    Log.d(TAG, "onClick: " + outputString);
-                    //
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
+//                try {
+//                    pwd = encrypt(mTextPassword.getText().toString().trim(), raktas);
+//                    //outputText.setText(user);
+//
+//                    //
+//                    outputString = decrypt(pwd, raktas);
+//                    Log.d(TAG, "onClick: " + pwd);
+//                    Log.d(TAG, "onClick: " + outputString);
+//                    //
+//                } catch (Exception e) {
+//                    e.printStackTrace();
+//                }
                 String cnf_pwd = mTextCnfPassword.getText().toString().trim();
-                try {
-                    cnf_pwd = encrypt(mTextCnfPassword.getText().toString().trim(), raktas);
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
+//                try {
+//                    cnf_pwd = encrypt(mTextCnfPassword.getText().toString().trim(), raktas);
+//                } catch (Exception e) {
+//                    e.printStackTrace();
+//                }
 
                 final JSONObject req_data = new JSONObject();
                 try {
