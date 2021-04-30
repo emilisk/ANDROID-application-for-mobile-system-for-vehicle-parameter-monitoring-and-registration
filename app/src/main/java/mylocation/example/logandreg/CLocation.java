@@ -6,6 +6,7 @@ public class CLocation extends Location {
 
     private boolean bUseMetricUnits = false;
 
+
     public CLocation(Location location){
         this(location, true);
     }
@@ -19,7 +20,7 @@ public class CLocation extends Location {
         return  this.bUseMetricUnits;
     }
 
-    public void setUseMetricUnits(boolean bUseMetricUnits) {
+    public void setUserMetricUnits(boolean bUseMetricUnits) {
         this.bUseMetricUnits = bUseMetricUnits;
     }
 
@@ -67,6 +68,4 @@ public class CLocation extends Location {
         return nAccuracy;
     }
 
-    public void setUseMetricUnits() {
-    }
 }

@@ -1,9 +1,5 @@
 package mylocation.example.logandreg;
 
-import androidx.annotation.NonNull;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.widget.SwitchCompat;
-
 import android.Manifest;
 import android.annotation.SuppressLint;
 import android.content.Context;
@@ -17,6 +13,10 @@ import android.util.Log;
 import android.widget.CompoundButton;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.SwitchCompat;
 
 import java.util.Formatter;
 import java.util.Locale;
@@ -87,7 +87,7 @@ public class Speed extends AppCompatActivity implements LocationListener {
         float nCurrentSpeed = 0;
 
         if(location != null) {
-            location.setUseMetricUnits(this.useMetricUnits());
+            location.setUserMetricUnits(this.useMetricUnits());
             nCurrentSpeed = location.getSpeed();
             Log.d(TAG, "updateSpeed: " + location.getSpeed());
         }
@@ -99,15 +99,16 @@ public class Speed extends AppCompatActivity implements LocationListener {
 
 
         if(this.useMetricUnits()){
-            tv_speed.setText(strCurrentSpeed + " km/h");
-        } else {
             tv_speed.setText(strCurrentSpeed + " miles/h");
+        } else {
+            tv_speed.setText(strCurrentSpeed + " km/h");
         }
     }
 
     private boolean useMetricUnits(){
-        return sw_metric.isChecked();
+        return sw_metric.isChecked() == false;
     }
+
 
 
     @Override

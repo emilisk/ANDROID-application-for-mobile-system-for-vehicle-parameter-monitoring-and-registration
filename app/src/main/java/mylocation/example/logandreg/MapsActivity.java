@@ -689,7 +689,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         final RequestQueue queue = Volley.newRequestQueue((Context)this);
 
         if(location != null) {
-            location.setUseMetricUnits(this.useMetricUnits());
+            location.setUserMetricUnits(this.useMetricUnits());
             nCurrentSpeed = location.getSpeed();
             //Log.d(TAG, "updateSpeed: " + location.getSpeed());
 
@@ -742,14 +742,14 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
 
 
         if(this.useMetricUnits()){
-            tv_speed.setText("Speed: "+ strCurrentSpeed + " km/h");
-        } else {
             tv_speed.setText("Speed: "+ strCurrentSpeed + " miles/h");
+        } else {
+            tv_speed.setText("Speed: "+ strCurrentSpeed + " km/h");
         }
     }
 
     private boolean useMetricUnits(){
-        return sw_metric.isChecked();
+        return sw_metric.isChecked() == false;
     }
 
     @Override
