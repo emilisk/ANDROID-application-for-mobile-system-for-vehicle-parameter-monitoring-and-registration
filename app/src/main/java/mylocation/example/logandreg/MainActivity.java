@@ -48,8 +48,13 @@ public class MainActivity extends AppCompatActivity {
 
     static int ats;
     static int kelione;
+    static int ats2;
+    static int kelione2;
     public static final String EXTRA_NUMBER = "mylocation.example.logandreg.EXTRA_NUMBER";
     public static final String EXTRA_NUMBER_KID = "mylocation.example.logandreg.EXTRA_NUMBER_KID";
+
+    public static final String EXTRA_NUMBER2 = "mylocation.example.logandreg.EXTRA_NUMBER";
+    public static final String EXTRA_NUMBER_KID2 = "mylocation.example.logandreg.EXTRA_NUMBER_KID";
 
 
     //Shared preferences
@@ -111,7 +116,7 @@ public class MainActivity extends AppCompatActivity {
                 }
            
                 RequestQueue requestQueue = Volley.newRequestQueue(MainActivity.this);
-                String URL = "http://78.60.2.145:8001/registracija2/";;
+                String URL = "http://78.60.2.145:8001/registracija2/";
                 final String TAG ="MainActivity";
                 JsonObjectRequest objectRequest = new JsonObjectRequest(Request.Method.POST, URL, req_data, new Response.Listener<JSONObject>() {
                     @Override
@@ -137,6 +142,11 @@ public class MainActivity extends AppCompatActivity {
                             mapsactivityIntent.putExtra(EXTRA_NUMBER, ats);
                             mapsactivityIntent.putExtra(EXTRA_NUMBER_KID, kelione);
                             startActivity(mapsactivityIntent);
+                            //perdavimas
+                            Intent profileactivityIntent = new Intent (MainActivity.this, Profile.class);
+                            profileactivityIntent.putExtra(EXTRA_NUMBER2, ats2);
+                            profileactivityIntent.putExtra(EXTRA_NUMBER_KID2, kelione2);
+
                             Log.d(TAG, "pirma: " + response.toString());
                             //}
 
@@ -149,7 +159,7 @@ public class MainActivity extends AppCompatActivity {
                     @Override
                     public void onErrorResponse(VolleyError error) {
                         Log.d(TAG, "Rest Response: " + error.toString());
-                        Toast.makeText(MainActivity.this, "Login Error", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(MainActivity.this, "Login Error. Wrong username or password", Toast.LENGTH_SHORT).show();
                     }
                 });
                 requestQueue.add(objectRequest);

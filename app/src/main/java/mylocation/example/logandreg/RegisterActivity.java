@@ -3,6 +3,7 @@ package mylocation.example.logandreg;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.util.Patterns;
 import android.view.View;
 import android.widget.Button;
@@ -123,45 +124,40 @@ public class RegisterActivity extends AppCompatActivity {
                     e.printStackTrace();
                 }
 
-                if(pwd.equals(cnf_pwd) && validateEmailAddress(mTextEmail) == true && validatePassword(mTextPassword) == true && validateUsername(mTextUsername)){
-                    long val = db.addUser(user,pwd);
-                    if(val > 0){
-                    Toast.makeText(RegisterActivity.this, "You have registered", Toast.LENGTH_SHORT).show();
-                    Intent moveToLogin = new Intent(RegisterActivity.this, MainActivity.class);
-                    startActivity(moveToLogin);
-
-                        JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(1, url, req_data, (Response.Listener)(new Response.Listener() {
-                            public void onResponse(Object var1) {
-                                this.onResponse((JSONObject)var1);
-                            }
-
-                            public final void onResponse(JSONObject response) {
-                            }
-                        }), (Response.ErrorListener)(new Response.ErrorListener() {
-                            public final void onErrorResponse(VolleyError error) {
-                            }
-                        }));
-                        queue.add((Request)jsonObjectRequest);
-                        Toast.makeText((Context)RegisterActivity.this, (CharSequence)"Button clicked", Toast.LENGTH_SHORT).show();
+                if(pwd.equals(cnf_pwd) && validateEmailAddress(mTextEmail) == true && validatePassword(mTextPassword) == true && validateUsername(mTextUsername)) {
 
 
+                    JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(1, url, req_data, (Response.Listener) (new Response.Listener() {
+                        public void onResponse(Object var1) {
+                            this.onResponse((JSONObject) var1);
+                            Log.d(TAG, "Rest Response: " + var1.toString());
+                            Toast.makeText(RegisterActivity.this, "You have registered", Toast.LENGTH_SHORT).show();
+                            Intent moveToLogin = new Intent(RegisterActivity.this, MainActivity.class);
+                            startActivity(moveToLogin);
+                        }
+
+                        public final void onResponse(JSONObject response) {
+
+                        }
+                    }), (Response.ErrorListener) (new Response.ErrorListener() {
+                        public final void onErrorResponse(VolleyError error) {
+                            Log.d(TAG, "Rest Response: " + error.toString());
+                            Toast.makeText(RegisterActivity.this, "Registration Error", Toast.LENGTH_SHORT).show();
+                        }
+                    }));
+                    queue.add((Request) jsonObjectRequest);
+                    Toast.makeText((Context) RegisterActivity.this, (CharSequence) "Button clicked", Toast.LENGTH_SHORT).show();
 
 
-
-                    }
-                    else{
-                        Toast.makeText(RegisterActivity.this, "Registration Error", Toast.LENGTH_SHORT).show();
-
-                    }
                 }
 //                else{
 //                    Toast.makeText(RegisterActivity.this, "Password is not matching", Toast.LENGTH_SHORT).show();
 //
 //                }
-                if(!pwd.equals(cnf_pwd)){
-                    Toast.makeText(RegisterActivity.this, "Password is not matching", Toast.LENGTH_SHORT).show();
+                    if (!pwd.equals(cnf_pwd)) {
+                        Toast.makeText(RegisterActivity.this, "Password is not matching", Toast.LENGTH_SHORT).show();
 
-                }
+                    }
 
             }
         });

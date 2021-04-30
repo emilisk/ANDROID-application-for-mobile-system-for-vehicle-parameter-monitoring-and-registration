@@ -3,9 +3,11 @@ package mylocation.example.logandreg;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -24,6 +26,8 @@ public class Profile extends AppCompatActivity implements NavigationView.OnNavig
     private DrawerLayout drawer;
     NavigationView navigationView;
     Toolbar toolbar = null;
+    private static final String TAG ="Profile";
+
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -82,6 +86,20 @@ public class Profile extends AppCompatActivity implements NavigationView.OnNavig
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_profile);
+
+        Intent intent = getIntent();
+        int ats =  intent.getIntExtra(MainActivity.EXTRA_NUMBER2,0);
+        int kelione =  intent.getIntExtra(MainActivity.EXTRA_NUMBER_KID2,0);
+        Log.d(TAG, "userid: " + MainActivity.ats);
+        Log.d(TAG, "tripid " + MainActivity.kelione);
+
+        final TextView idk = (TextView) findViewById(R.id.idkeitimas);
+//        idk.setText(""+MainActivity.ats);
+        idk.setText(String.valueOf(MainActivity.ats));
+       // idk.setText(Integer.toString(MainActivity.ats));
+
+
+
 
         //Navigation drawer
         Toolbar toolbar = findViewById(R.id.toolbar);

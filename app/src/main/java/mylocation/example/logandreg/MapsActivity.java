@@ -5,6 +5,7 @@ import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.hardware.Sensor;
@@ -170,6 +171,16 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
                 alertDialog.show();
                 return true;
             }
+            case R.id.Share: {
+                ApplicationInfo api = getApplicationContext().getApplicationInfo();
+                String apkpath = api.sourceDir;
+                Intent intent = new Intent(Intent.ACTION_SEND);
+                String shareBody = "TripLog";
+                intent.setType("text/plain");
+                intent.putExtra(android.content.Intent.EXTRA_SUBJECT, "Try subject");
+                intent.putExtra(android.content.Intent.EXTRA_TEXT, shareBody);
+                startActivity(Intent.createChooser(intent, "ShareVia"));
+            }
         }
         return super.onOptionsItemSelected(item);
 
@@ -225,6 +236,8 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         Intent intent = getIntent();
         int ats =  intent.getIntExtra(MainActivity.EXTRA_NUMBER,0);
         int kelione =  intent.getIntExtra(MainActivity.EXTRA_NUMBER_KID,0);
+        Log.d(TAG, "reiksme: " + ats);
+        Log.d(TAG, "reiksme: " + kelione);
 
 
         // TIME AND DATE
@@ -588,10 +601,12 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
                     }));
                     queue.add((Request) jsonObjectRequest);
                 }
-                
 
-                if (detection_state == true && (ay > 0.05)) {
 
+                double aysenas = 0.1;
+                if (detection_state == true && (ay - aysenas > 0.02)) {
+
+                    aysenas = ay;
 
                     final String url2 = "http://78.60.2.145:8001/duobes/";
                     latitude = (float) location.getLatitude();
@@ -609,6 +624,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
                     Log.d(TAG, "Akselerometras x siuncia: " + ax);
                     Log.d(TAG, "Akselerometras y siuncia: " + ay);
                     Log.d(TAG, "Akselerometras z siuncia: " + az);
+                    Log.d(TAG, "Akselerometras aysenas siuncia: " + aysenas);
 
                     JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(1, url2, req_data, (Response.Listener) (new Response.Listener() {
                         public void onResponse(Object var1) {
@@ -622,6 +638,8 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
                         }
                     }));
                     queue.add((Request) jsonObjectRequest);
+
+
                 }
 
 
@@ -831,6 +849,14 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
                 }
                 case R.id.nav_share:
                     Toast.makeText(this, "Share", Toast.LENGTH_SHORT).show();
+                    ApplicationInfo api = getApplicationContext().getApplicationInfo();
+                    String apkpath = api.sourceDir;
+                    Intent intent = new Intent(Intent.ACTION_SEND);
+                    String shareBody = "TripLog";
+                    intent.setType("text/plain");
+                    intent.putExtra(android.content.Intent.EXTRA_SUBJECT, "Try subject");
+                    intent.putExtra(android.content.Intent.EXTRA_TEXT, shareBody);
+                    startActivity(Intent.createChooser(intent, "ShareVia"));
                     return true;
                 case R.id.nav_send:
                     Toast.makeText(this, "Send", Toast.LENGTH_SHORT).show();
