@@ -80,16 +80,7 @@
                     android:textOff="Start Trip"
                     android:textOn="Stop Trip" />
 
-                <androidx.appcompat.widget.SwitchCompat
-                    android:id="@+id/sw_metric"
-                    android:layout_width="200dp"
-                    android:layout_height="wrap_content"
-                    android:layout_alignParentBottom="true"
-                    android:layout_centerHorizontal="true"
-                    android:layout_marginRight="10dp"
-                    android:checked="true"
-                    android:gravity="center"
-                    android:text="Metric Units" />
+
 
 
 

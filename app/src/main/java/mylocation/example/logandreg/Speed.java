@@ -10,7 +10,6 @@ import android.location.LocationManager;
 import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
-import android.widget.CompoundButton;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -32,7 +31,7 @@ public class Speed extends AppCompatActivity implements LocationListener {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_speed);
 
-        sw_metric = findViewById(R.id.sw_metric);
+//        sw_metric = findViewById(R.id.sw_metric);
         tv_speed = findViewById(R.id.tv_speed);
 
         if(Build.VERSION.SDK_INT == Build.VERSION_CODES.M && checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION)
@@ -43,12 +42,12 @@ public class Speed extends AppCompatActivity implements LocationListener {
         }
         this.updateSpeed(null);
 
-        sw_metric.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                Speed.this.updateSpeed(null);
-            }
-        });
+//        sw_metric.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+//            @Override
+//            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+//                Speed.this.updateSpeed(null);
+//            }
+//        });
     }
 
     @Override
@@ -98,15 +97,15 @@ public class Speed extends AppCompatActivity implements LocationListener {
         strCurrentSpeed = strCurrentSpeed.replace(" ", "0");
 
 
-        if(this.useMetricUnits()){
-            tv_speed.setText(strCurrentSpeed + " miles/h");
-        } else {
+        if(this.useMetricUnits() == false){
+//            tv_speed.setText(strCurrentSpeed + " miles/h");
+//        } else {
             tv_speed.setText(strCurrentSpeed + " km/h");
         }
     }
 
     private boolean useMetricUnits(){
-        return sw_metric.isChecked() == false;
+        return false;
     }
 
 

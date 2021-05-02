@@ -27,7 +27,6 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.WindowManager;
-import android.widget.CompoundButton;
 import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.ToggleButton;
@@ -222,7 +221,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         locationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
 
-        sw_metric = findViewById(R.id.sw_metric);
+//        sw_metric = findViewById(R.id.sw_metric);
         tv_speed = findViewById(R.id.tv_speed);
 
 
@@ -325,12 +324,12 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         }
         this.updateSpeed(null);
 
-        sw_metric.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                MapsActivity.this.updateSpeed(null);
-            }
-        });
+//        sw_metric.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+//            @Override
+//            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+//                MapsActivity.this.updateSpeed(null);
+//            }
+//        });
 
 
 
@@ -741,15 +740,15 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         strCurrentSpeed = strCurrentSpeed.replace(" ", "0");
 
 
-        if(this.useMetricUnits()){
-            tv_speed.setText("Speed: "+ strCurrentSpeed + " miles/h");
-        } else {
+        if(this.useMetricUnits() == false){
+//            tv_speed.setText("Speed: "+ strCurrentSpeed + " miles/h");
+//        } else {
             tv_speed.setText("Speed: "+ strCurrentSpeed + " km/h");
         }
     }
 
     private boolean useMetricUnits(){
-        return sw_metric.isChecked() == false;
+        return false;
     }
 
     @Override
