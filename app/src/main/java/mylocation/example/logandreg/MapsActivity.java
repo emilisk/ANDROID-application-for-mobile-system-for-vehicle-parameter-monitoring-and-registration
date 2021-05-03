@@ -90,6 +90,9 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
     LocationRequest locationRequest;
 
 
+    Location currLocation,prevLocation;
+    Boolean isInitialized=false;
+    float distance=0.0f;
 
     Marker userLocationMarker;
     Circle userLocationAccuracyCircle;
@@ -561,7 +564,19 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
                 CLocation myLocation = new CLocation(location, this.useMetricUnits());
                 this.updateSpeed(myLocation);
 
-                if (detection_state == true ) {
+                if (!isInitialized && detection_state == true ) {
+                    prevLocation = location;
+                    currLocation = location;
+                    isInitialized = true;
+                } else if (detection_state == true){
+                    prevLocation = currLocation;
+                    currLocation = location;
+
+                    distance+= prevLocation.distanceTo(currLocation);
+//                    tvDistance.setText("Distance = "+distance+" meters");
+                    Log.d(TAG, "Distance = "+distance+" meters");
+
+
 //                    Log.d(TAG, "onLocationResult: " + location.getLatitude());
 //                    Log.d(TAG, "onLocationResult: " + location.getLongitude());
 
