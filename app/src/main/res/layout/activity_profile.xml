@@ -8,7 +8,7 @@
     android:layout_height="match_parent"
     android:fitsSystemWindows="true"
     tools:context=".MainActivity"
-    tools:openDrawer="start">
+    tools:openDrawer="">
 
     <RelativeLayout
         android:layout_width="match_parent"
@@ -69,9 +69,8 @@
     <com.google.android.material.textfield.TextInputEditText
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:text="ID"
+        android:text="Your ID:"
         android:id="@+id/idkeitimas"
-        android:drawableStart="@drawable/ic_baseline_person_24"
         android:drawablePadding="10dp"/>
 
     </com.google.android.material.textfield.TextInputLayout>
@@ -85,8 +84,8 @@
         <com.google.android.material.textfield.TextInputEditText
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:text="Email"
-            android:drawableStart="@drawable/ic_email"
+            android:text="Your email:"
+            android:id="@+id/emailkeitimas"
             android:drawablePadding="10dp"/>
 
     </com.google.android.material.textfield.TextInputLayout>
@@ -95,28 +94,13 @@
         android:layout_width="match_parent"
         android:layout_height="100dp"
         android:layout_marginTop="355dp"
-        android:hint="User name">
+        android:hint="Username">
 
         <com.google.android.material.textfield.TextInputEditText
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:text="Username"
-            android:drawableStart="@drawable/ic_baseline_person_24"
-            android:drawablePadding="10dp"/>
-
-    </com.google.android.material.textfield.TextInputLayout>
-
-    <com.google.android.material.textfield.TextInputLayout
-        android:layout_width="match_parent"
-        android:layout_height="100dp"
-        android:layout_marginTop="355dp"
-        android:hint="User name">
-
-        <com.google.android.material.textfield.TextInputEditText
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:text="Username"
-            android:drawableStart="@drawable/ic_baseline_person_24"
+            android:text="Your username: "
+            android:id="@+id/userkeitimas"
             android:drawablePadding="10dp"/>
 
     </com.google.android.material.textfield.TextInputLayout>
@@ -125,13 +109,13 @@
         android:layout_width="match_parent"
         android:layout_height="100dp"
         android:layout_marginTop="455dp"
-        android:hint="Average speed">
+        android:hint="Number of trips">
 
         <com.google.android.material.textfield.TextInputEditText
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:text="Average speed"
-            android:drawableStart="@drawable/ic_baseline_person_24"
+            android:text="Total number of your trips:"
+            android:id="@+id/tripkeitimas"
             android:drawablePadding="10dp"/>
 
     </com.google.android.material.textfield.TextInputLayout>

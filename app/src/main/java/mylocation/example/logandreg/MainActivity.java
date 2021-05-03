@@ -46,6 +46,8 @@ public class MainActivity extends AppCompatActivity {
 
     private StringRequest request;
 
+    static String email;
+    static String username;
     static int ats;
     static int kelione;
     static int ats2;
@@ -126,9 +128,12 @@ public class MainActivity extends AppCompatActivity {
                             //JSONObject jsonobject1 = jsonObject.getJSONObject(response.toString());
                             ats = jsonObject.getInt("id");
                             kelione = jsonObject.getInt("tripid");
+                            email = jsonObject.getString("email");
+                            username = user;
                             //Log.d(TAG, "objektas: " + response);
                             Log.d(TAG, "objektas123: " + ats);
                             Log.d(TAG, "keliones id: " + kelione);
+                            Log.d(TAG, "email: " + email);
                             // if(jsonObject.names().get(0).equals("id")){
                             if(savelogincheckbox.isChecked()){
                                 editor.putBoolean("savelogin", true);

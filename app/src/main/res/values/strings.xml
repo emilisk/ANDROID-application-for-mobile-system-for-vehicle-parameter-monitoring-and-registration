@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">Application</string>
+    <string name="app_name">TripLog</string>
     <string name="username">Username</string>
     <string name="password">Password</string>
     <string name="login">Login</string>
@@ -12,7 +12,7 @@
     <string name="register2">register</string>
     <string name="or">OR</string>
     <string name="application">Application</string>
-    <string name="title_activity_maps">Home</string>
+    <string name="title_activity_maps">Map</string>
     <string name="confirm_password">Confirm password</string>
     <string name="signup">Signup</string>
     <string name="email">Email</string>

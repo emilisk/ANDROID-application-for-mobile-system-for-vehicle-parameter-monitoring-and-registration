@@ -2,6 +2,7 @@ package mylocation.example.logandreg;
 
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.pm.ApplicationInfo;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
@@ -77,6 +78,18 @@ public class Profile extends AppCompatActivity implements NavigationView.OnNavig
                 AlertDialog alertDialog = alertDialogBuilder.create();
                 alertDialog.show();
                 return true;
+
+
+            }
+            case R.id.Share: {
+                ApplicationInfo api = getApplicationContext().getApplicationInfo();
+                String apkpath = api.sourceDir;
+                Intent intent = new Intent(Intent.ACTION_SEND);
+                String shareBody = "TripLog";
+                intent.setType("text/plain");
+                intent.putExtra(android.content.Intent.EXTRA_SUBJECT, "Try subject");
+                intent.putExtra(android.content.Intent.EXTRA_TEXT, shareBody);
+                startActivity(Intent.createChooser(intent, "ShareVia"));
             }
         }
         return super.onOptionsItemSelected(item);
@@ -98,6 +111,14 @@ public class Profile extends AppCompatActivity implements NavigationView.OnNavig
         idk.setText(String.valueOf(MainActivity.ats));
        // idk.setText(Integer.toString(MainActivity.ats));
 
+        final TextView emailk = (TextView) findViewById(R.id.emailkeitimas);
+        emailk.setText(String.valueOf(MainActivity.email));
+
+        final TextView userk = (TextView) findViewById(R.id.userkeitimas);
+        userk.setText(String.valueOf(MainActivity.username));
+
+        final TextView tripk = (TextView) findViewById(R.id.tripkeitimas);
+        tripk.setText(String.valueOf(MainActivity.kelione));
 
 
 
@@ -174,6 +195,14 @@ public class Profile extends AppCompatActivity implements NavigationView.OnNavig
                 return true;
             case R.id.nav_share:
                 Toast.makeText(this, "Share", Toast.LENGTH_SHORT).show();
+                ApplicationInfo api = getApplicationContext().getApplicationInfo();
+                String apkpath = api.sourceDir;
+                Intent intent = new Intent(Intent.ACTION_SEND);
+                String shareBody = "TripLog";
+                intent.setType("text/plain");
+                intent.putExtra(android.content.Intent.EXTRA_SUBJECT, "Try subject");
+                intent.putExtra(android.content.Intent.EXTRA_TEXT, shareBody);
+                startActivity(Intent.createChooser(intent, "ShareVia"));
                 return true;
             case R.id.nav_exit:{
                 AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(this);
@@ -207,9 +236,6 @@ public class Profile extends AppCompatActivity implements NavigationView.OnNavig
                 alertDialog.show();
                 return true;
             }
-            case R.id.nav_send:
-                Toast.makeText(this, "Send", Toast.LENGTH_SHORT).show();
-                return true;
         }
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);

@@ -17,7 +17,6 @@ import android.location.Geocoder;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
-import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
@@ -37,7 +36,6 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.SwitchCompat;
 import androidx.appcompat.widget.Toolbar;
-import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
@@ -90,6 +88,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
     private int ACCESS_LOCATION_REQUEST_CODE = 10001;
     FusedLocationProviderClient fusedLocationProviderClient;
     LocationRequest locationRequest;
+
 
 
     Marker userLocationMarker;
@@ -316,13 +315,15 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
 
 
 
-        if(Build.VERSION.SDK_INT == Build.VERSION_CODES.M && checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION)
+        if(ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
                 != PackageManager.PERMISSION_GRANTED){
             requestPermissions(new String[] {Manifest.permission.ACCESS_FINE_LOCATION}, 1000);
-        } else {
+        } else if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
+                == PackageManager.PERMISSION_GRANTED) {
             doStuff();
         }
-        this.updateSpeed(null);
+
+//        this.updateSpeed(null);
 
 //        sw_metric.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
 //            @Override
@@ -361,14 +362,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
             //enableUserLocation();
             //zoomToUserLocation();
         } else {
-            if (ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.ACCESS_FINE_LOCATION)){
-                // WE CAN SHOW USER DIALOG
-                ActivityCompat.requestPermissions(this, new String[] {Manifest.permission.ACCESS_FINE_LOCATION},
-                        ACCESS_LOCATION_REQUEST_CODE);
-            } else {
-                ActivityCompat.requestPermissions(this, new String[] {Manifest.permission.ACCESS_FINE_LOCATION},
-                        ACCESS_LOCATION_REQUEST_CODE);
-            }
+//            askLocationPermission();
         }
 
 
@@ -461,6 +455,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
                 .PERMISSION_GRANTED){
             startLocationUpdates();
         } else {
+//            askLocationPermission();
             // you need to request permission
         }
     }
@@ -536,11 +531,12 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
 
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-        if(requestCode == ACCESS_LOCATION_REQUEST_CODE){
+        if(requestCode == ACCESS_LOCATION_REQUEST_CODE && requestCode == 1000){
             if(grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED){
                 enableUserLocation();
                 zoomToUserLocation();
-                doStuff();
+//                doStuff();
+//                this.updateSpeed(null);
             } else {
                 // we can show dialog that permission is not granted
             }
@@ -674,14 +670,17 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
 
     @SuppressLint("MissingPermission")
     public void doStuff(){
-        LocationManager locationManager = (LocationManager) this.getSystemService(Context.LOCATION_SERVICE);
-        if(locationManager != null){
-            locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0 ,0, this);
-        }
-        Toast.makeText(this, "Waiting for GPS connection", Toast.LENGTH_SHORT).show();
-    }
+                LocationManager locationManager = (LocationManager) this.getSystemService(Context.LOCATION_SERVICE);
+                if (locationManager != null) {
+                    locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, this);
+                }
+                Toast.makeText(this, "Waiting for GPS connection", Toast.LENGTH_SHORT).show();
+            }
+
+
 
     private void updateSpeed(CLocation location){
+
         float nCurrentSpeed = 0;
         ///
         final String url = "http://78.60.2.145:8001/speed/";
@@ -857,15 +856,25 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
                     intent.putExtra(android.content.Intent.EXTRA_TEXT, shareBody);
                     startActivity(Intent.createChooser(intent, "ShareVia"));
                     return true;
-                case R.id.nav_send:
-                    Toast.makeText(this, "Send", Toast.LENGTH_SHORT).show();
-                    return true;
             }
             DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
             drawer.closeDrawer(GravityCompat.START);
 
         return true;
     }
+
+//    private void askLocationPermission(){
+//        if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED){
+//            if (ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.ACCESS_FINE_LOCATION)) {
+//                Log.d(TAG, "askLocationPermission: you should show alert dialogue");
+//                ActivityCompat.requestPermissions(this, new String [] {Manifest.permission.ACCESS_FINE_LOCATION},
+//                        ACCESS_LOCATION_REQUEST_CODE);
+//            } else {
+//                ActivityCompat.requestPermissions(this, new String [] {Manifest.permission.ACCESS_FINE_LOCATION},
+//                        ACCESS_LOCATION_REQUEST_CODE);
+//            }
+//        }
+//    }
 
     //        private void duobes(SensorEvent sensorEvent, Location location) {
 //
