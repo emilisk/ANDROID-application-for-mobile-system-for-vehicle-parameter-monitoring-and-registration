@@ -75,6 +75,8 @@ import java.util.Calendar;
 import java.util.Formatter;
 import java.util.List;
 import java.util.Locale;
+import java.util.Timer;
+import java.util.TimerTask;
 
 import static mylocation.example.logandreg.MainActivity.ats;
 import static mylocation.example.logandreg.MainActivity.kelione;
@@ -89,16 +91,35 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
     FusedLocationProviderClient fusedLocationProviderClient;
     LocationRequest locationRequest;
 
+    // Timer
+    Timer timer;
+    TimerTask timerTask;
+    Double time2 = 0.0;
 
+    boolean timerStarted = false;
+    /// 5/4/2021
+
+
+    // Time
+    private Long prevTime=null,currTime=null;
+    String time = null;
+    long millis, seconds, minutes, hours;
+
+
+
+    // Distance
     Location currLocation,prevLocation;
     Boolean isInitialized=false;
     float distance=0.0f;
+    //
 
     Marker userLocationMarker;
     Circle userLocationAccuracyCircle;
 
     SwitchCompat sw_metric;
     TextView tv_speed;
+    TextView tv_distance;
+    TextView tv_time;
 
 
     // Mygtukas
@@ -193,6 +214,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_maps);
 
+        timer = new Timer();
 
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -225,6 +247,8 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
 
 //        sw_metric = findViewById(R.id.sw_metric);
         tv_speed = findViewById(R.id.tv_speed);
+        tv_distance = findViewById(R.id.tv_distance);
+        tv_time = findViewById(R.id.tv_time);
 
 
         //Akselerometras
@@ -300,6 +324,14 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
                     detection_state = true;
                     Log.d(TAG, "start trip");
                     MainActivity.kelione = MainActivity.kelione + 1;
+
+//                    tv_time.setText("Time = 00:00:00");
+                    tv_distance.setText("Distance = 0 meters");
+                    distance = 0;
+
+
+
+
 //                    tripid = tripid + 1;
 //                    MapsActivity.this.onLocationChanged(null);
 //                    while(detection_state){
@@ -310,6 +342,19 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
                     Toast.makeText(MapsActivity.this, "Stopped", Toast.LENGTH_LONG).show();
                     detection_state = false;
                     Log.d(TAG, "stop trip");
+//                    timerStarted = false;
+                    if(timerTask != null)
+                    {
+                        timerTask.cancel();
+                        time2 = 0.0;
+                        timerStarted = false;
+                        tv_time.setText(formatTime(0,0,0));
+
+                    }
+//                    tv_time.setText("Time = 00:00:00");
+//                    tv_distance.setText("Distance = 0 meters");
+//                    distance = 0;
+//                    time = null;
                 }
 
             }
@@ -338,6 +383,104 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
 
 
 
+    }
+
+    public void resetTapped(View view)
+    {
+        AlertDialog.Builder resetAlert = new AlertDialog.Builder(this);
+        resetAlert.setTitle("Reset Timer");
+        resetAlert.setMessage("Are you sure you want to reset the timer?");
+        resetAlert.setPositiveButton("Reset", new DialogInterface.OnClickListener()
+        {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i)
+            {
+                if(timerTask != null)
+                {
+                    timerTask.cancel();
+//                    setButtonUI("START", R.color.green);
+                    time2 = 0.0;
+                    timerStarted = false;
+                    tv_time.setText(formatTime(0,0,0));
+
+                }
+            }
+        });
+
+        resetAlert.setNeutralButton("Cancel", new DialogInterface.OnClickListener()
+        {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i)
+            {
+                //do nothing
+            }
+        });
+
+        resetAlert.show();
+
+    }
+
+    public void startStopTapped(View view)
+    {
+        if(timerStarted == false)
+        {
+            timerStarted = true;
+//            setButtonUI("STOP", R.color.red);
+
+            startTimer();
+        }
+        else
+        {
+            timerStarted = false;
+//            setButtonUI("START", R.color.green);
+
+            timerTask.cancel();
+        }
+    }
+
+//    private void setButtonUI(String start, int color)
+//    {
+//        stopStartButton.setText(start);
+//        stopStartButton.setTextColor(ContextCompat.getColor(this, color));
+//    }
+
+    private void startTimer()
+    {
+        timerTask = new TimerTask()
+        {
+            @Override
+            public void run()
+            {
+                runOnUiThread(new Runnable()
+                {
+                    @Override
+                    public void run()
+                    {
+                        time2++;
+                        tv_time.setText(getTimerText());
+                    }
+                });
+            }
+
+        };
+        timer.scheduleAtFixedRate(timerTask, 0 ,1000);
+    }
+
+
+    private String getTimerText()
+    {
+        int rounded = (int) Math.round(time2);
+
+        int seconds = ((rounded % 86400) % 3600) % 60;
+        int minutes = ((rounded % 86400) % 3600) / 60;
+        int hours = ((rounded % 86400) / 3600);
+
+        return formatTime(seconds, minutes, hours);
+    }
+
+    private String formatTime(int seconds, int minutes, int hours)
+    {
+        return String.format("%02d",hours) + " : " + String.format("%02d",minutes) + " : " + String.format("%02d",seconds);
     }
 
 
@@ -552,6 +695,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
 
     // koordinatems
 
+        @SuppressLint("DefaultLocale")
         @Override
         public void onLocationChanged(@NonNull Location location) {
 
@@ -564,18 +708,35 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
                 CLocation myLocation = new CLocation(location, this.useMetricUnits());
                 this.updateSpeed(myLocation);
 
+
                 if (!isInitialized && detection_state == true ) {
+
                     prevLocation = location;
                     currLocation = location;
+//                    prevTime = System.currentTimeMillis();
+//                    currTime = System.currentTimeMillis();
                     isInitialized = true;
-                } else if (detection_state == true){
+//                    tv_time.setText("Time = 00:00:00");
+                    tv_distance.setText("Distance = 0 meters");
+
+                } else if (detection_state == true && isInitialized == true){
+                    if (timerStarted == false) {
+                        timerStarted = true;
+                        startTimer();
+                    }
                     prevLocation = currLocation;
                     currLocation = location;
-
                     distance+= prevLocation.distanceTo(currLocation);
-//                    tvDistance.setText("Distance = "+distance+" meters");
+                    tv_distance.setText("Distance = "+distance+" meters");
                     Log.d(TAG, "Distance = "+distance+" meters");
 
+//                    millis = prevTime - System.currentTimeMillis();
+//                    hours = TimeUnit.MILLISECONDS.toHours(millis) % 24;
+//                    minutes = TimeUnit.MILLISECONDS.toMinutes(millis) % 60;
+//                    seconds = TimeUnit.MILLISECONDS.toSeconds(millis);
+//                    time = String.format("%02d:%02d:%02d",-hours, -minutes, -(seconds% 60));
+//                    tv_time.setText("Time = "+time);
+//                    Log.d(TAG, "Time = "+time);
 
 //                    Log.d(TAG, "onLocationResult: " + location.getLatitude());
 //                    Log.d(TAG, "onLocationResult: " + location.getLongitude());
@@ -594,6 +755,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
                         req_data.put("latitude", latitude);
                         req_data.put("longitude", longitude);
                         req_data.put("laikas", dateTime);
+                        req_data.put("distance", distance);
                     } catch (JSONException e) {
                         e.printStackTrace();
                     }
@@ -877,6 +1039,8 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
 
         return true;
     }
+
+
 
 //    private void askLocationPermission(){
 //        if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED){
