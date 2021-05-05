@@ -91,6 +91,12 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
     FusedLocationProviderClient fusedLocationProviderClient;
     LocationRequest locationRequest;
 
+
+    //vidutinis greitis
+    float vid_greitis = 0f;
+    int seconds, minutes, hours;
+    float laikas;
+
     // Timer
     Timer timer;
     TimerTask timerTask;
@@ -98,13 +104,6 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
 
     boolean timerStarted = false;
     /// 5/4/2021
-
-
-    // Time
-    private Long prevTime=null,currTime=null;
-    String time = null;
-    long millis, seconds, minutes, hours;
-
 
 
     // Distance
@@ -324,43 +323,75 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
                     detection_state = true;
                     Log.d(TAG, "start trip");
                     MainActivity.kelione = MainActivity.kelione + 1;
-
-//                    tv_time.setText("Time = 00:00:00");
-                    tv_distance.setText("Distance = 0 meters");
+                    tv_distance.setText("Distance = 0 kilometers");
                     distance = 0;
-
-
-
-
-//                    tripid = tripid + 1;
-//                    MapsActivity.this.onLocationChanged(null);
-//                    while(detection_state){
-//                    }
-
+                    time2 = 0.0;
+                    timerStarted = false;
+                    tv_time.setText(formatTime(0,0,0));
                 } else {
                     //button.setBackgroundColor(getResources().getColor(grayTranslucent));
                     Toast.makeText(MapsActivity.this, "Stopped", Toast.LENGTH_LONG).show();
                     detection_state = false;
                     Log.d(TAG, "stop trip");
-//                    timerStarted = false;
-                    if(timerTask != null)
-                    {
-                        timerTask.cancel();
-                        time2 = 0.0;
-                        timerStarted = false;
-                        tv_time.setText(formatTime(0,0,0));
+                    timerTask.cancel();
 
+
+                    vid_greitis = distance;
+                    laikas = ((float)seconds / 3600) + ((float)minutes / 60) + (float)hours;
+                    vid_greitis = distance / laikas;
+                    vid_greitis = (float) (Math.floor(vid_greitis * 100) / 100);
+                    Log.d(TAG, "Vidutinis greitis: " + vid_greitis);
+
+
+                    final String url = "http://78.60.2.145:8001/speed/";
+                    final RequestQueue queue = Volley.newRequestQueue((Context) MapsActivity.this);
+                    final JSONObject req_data = new JSONObject();
+                    try {
+                        req_data.put("tripid", MainActivity.kelione);
+                        req_data.put("userid", MainActivity.ats);
+//                    req_data.put("speed", nCurrentSpeed);
+                        req_data.put("speed", vid_greitis);
+                    } catch (JSONException e) {
+                        e.printStackTrace();
                     }
-//                    tv_time.setText("Time = 00:00:00");
-//                    tv_distance.setText("Distance = 0 meters");
-//                    distance = 0;
-//                    time = null;
+
+                    JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(1, url, req_data, (Response.Listener) (new Response.Listener() {
+                        public void onResponse(Object var1) {
+                            this.onResponse((JSONObject) var1);
+                        }
+
+                        public final void onResponse(JSONObject response) {
+                        }
+                    }), (Response.ErrorListener) (new Response.ErrorListener() {
+                        public final void onErrorResponse(VolleyError error) {
+                        }
+                    }));
+                    queue.add((Request) jsonObjectRequest);
+
+
+                    //Duomenu isvedimas
+                    AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(MapsActivity.this);
+
+                    alertDialogBuilder.setTitle("Kelionės rezultatai");
+
+                    alertDialogBuilder.setMessage("Atstumas: "+(float) distance + " km\n" + "Laikas: " + getTimerText()
+                            + "\n" + "Kelionės vidutinis greitis: " + vid_greitis  + " km/h");
+
+                    alertDialogBuilder.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            dialog.dismiss();
+                        }
+                    });
+                    AlertDialog alertDialog = alertDialogBuilder.create();
+                    alertDialog.show();
+
+
                 }
 
             }
         });
         //
-
 
 
         if(ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
@@ -385,64 +416,6 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
 
     }
 
-    public void resetTapped(View view)
-    {
-        AlertDialog.Builder resetAlert = new AlertDialog.Builder(this);
-        resetAlert.setTitle("Reset Timer");
-        resetAlert.setMessage("Are you sure you want to reset the timer?");
-        resetAlert.setPositiveButton("Reset", new DialogInterface.OnClickListener()
-        {
-            @Override
-            public void onClick(DialogInterface dialogInterface, int i)
-            {
-                if(timerTask != null)
-                {
-                    timerTask.cancel();
-//                    setButtonUI("START", R.color.green);
-                    time2 = 0.0;
-                    timerStarted = false;
-                    tv_time.setText(formatTime(0,0,0));
-
-                }
-            }
-        });
-
-        resetAlert.setNeutralButton("Cancel", new DialogInterface.OnClickListener()
-        {
-            @Override
-            public void onClick(DialogInterface dialogInterface, int i)
-            {
-                //do nothing
-            }
-        });
-
-        resetAlert.show();
-
-    }
-
-    public void startStopTapped(View view)
-    {
-        if(timerStarted == false)
-        {
-            timerStarted = true;
-//            setButtonUI("STOP", R.color.red);
-
-            startTimer();
-        }
-        else
-        {
-            timerStarted = false;
-//            setButtonUI("START", R.color.green);
-
-            timerTask.cancel();
-        }
-    }
-
-//    private void setButtonUI(String start, int color)
-//    {
-//        stopStartButton.setText(start);
-//        stopStartButton.setTextColor(ContextCompat.getColor(this, color));
-//    }
 
     private void startTimer()
     {
@@ -471,18 +444,27 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
     {
         int rounded = (int) Math.round(time2);
 
-        int seconds = ((rounded % 86400) % 3600) % 60;
-        int minutes = ((rounded % 86400) % 3600) / 60;
-        int hours = ((rounded % 86400) / 3600);
+        seconds = ((rounded % 86400) % 3600) % 60;
+        minutes = ((rounded % 86400) % 3600) / 60;
+        hours = ((rounded % 86400) / 3600);
+
+
 
         return formatTime(seconds, minutes, hours);
     }
 
+    @SuppressLint("DefaultLocale")
     private String formatTime(int seconds, int minutes, int hours)
     {
         return String.format("%02d",hours) + " : " + String.format("%02d",minutes) + " : " + String.format("%02d",seconds);
+
+
     }
 
+//    private int vidgreits (float vid_greitis){
+//
+//        vid_greitis = (seconds / 3600) + (minutes / 60) + hours;
+//    }
 
     /**
      * Manipulates the map once available.
@@ -523,20 +505,20 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
 //        CameraUpdate cameraUpdate = CameraUpdateFactory.newLatLngZoom(latLng, 16);
 //        mMap.animateCamera(cameraUpdate);
 
-        try {
-            List<Address> addresses = geocoder.getFromLocationName("london", 1);
-            if (addresses.size() > 0){
-                Address address = addresses.get(0);
-                LatLng london = new LatLng(address.getLatitude(), address.getLongitude());
-                MarkerOptions markerOptions = new MarkerOptions()
-                        .position(london)
-                        .title(address.getLocality());
-                mMap.addMarker(markerOptions);
-                mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(london, 16));
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+//        try {
+//            List<Address> addresses = geocoder.getFromLocationName("london", 1);
+//            if (addresses.size() > 0){
+//                Address address = addresses.get(0);
+//                LatLng london = new LatLng(address.getLatitude(), address.getLongitude());
+//                MarkerOptions markerOptions = new MarkerOptions()
+//                        .position(london)
+//                        .title(address.getLocality());
+//                mMap.addMarker(markerOptions);
+//                mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(london, 16));
+//            }
+//        } catch (IOException e) {
+//            e.printStackTrace();
+//        }
 
 
     }
@@ -713,10 +695,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
 
                     prevLocation = location;
                     currLocation = location;
-//                    prevTime = System.currentTimeMillis();
-//                    currTime = System.currentTimeMillis();
                     isInitialized = true;
-//                    tv_time.setText("Time = 00:00:00");
                     tv_distance.setText("Distance = 0 meters");
 
                 } else if (detection_state == true && isInitialized == true){
@@ -726,17 +705,9 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
                     }
                     prevLocation = currLocation;
                     currLocation = location;
-                    distance+= prevLocation.distanceTo(currLocation);
-                    tv_distance.setText("Distance = "+distance+" meters");
-                    Log.d(TAG, "Distance = "+distance+" meters");
-
-//                    millis = prevTime - System.currentTimeMillis();
-//                    hours = TimeUnit.MILLISECONDS.toHours(millis) % 24;
-//                    minutes = TimeUnit.MILLISECONDS.toMinutes(millis) % 60;
-//                    seconds = TimeUnit.MILLISECONDS.toSeconds(millis);
-//                    time = String.format("%02d:%02d:%02d",-hours, -minutes, -(seconds% 60));
-//                    tv_time.setText("Time = "+time);
-//                    Log.d(TAG, "Time = "+time);
+                    distance+= (prevLocation.distanceTo(currLocation)/1000);
+                    distance = (float) (Math.floor(distance * 100) / 100);
+                    tv_distance.setText("Distance = "+distance+" kilometers");
 
 //                    Log.d(TAG, "onLocationResult: " + location.getLatitude());
 //                    Log.d(TAG, "onLocationResult: " + location.getLongitude());
@@ -756,6 +727,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
                         req_data.put("longitude", longitude);
                         req_data.put("laikas", dateTime);
                         req_data.put("distance", distance);
+                        req_data.put("keliones_laikas", getTimerText());
                     } catch (JSONException e) {
                         e.printStackTrace();
                     }
@@ -870,41 +842,29 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
 
 
             /// GREITIS ///
-            if (detection_state == true) {
-                final JSONObject req_data = new JSONObject();
-                try {
-                    req_data.put("tripid", kelione);
-                    req_data.put("userid", ats);
-                    req_data.put("speed", nCurrentSpeed);
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
-
-                JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(1, url, req_data, (Response.Listener) (new Response.Listener() {
-                    // $FF: synthetic method
-                    // $FF: bridge method
-                    public void onResponse(Object var1) {
-                        this.onResponse((JSONObject) var1);
-                    }
-
-                    public final void onResponse(JSONObject response) {
-                        //TextView var10000 = txt;
-                        //Intrinsics.checkNotNullExpressionValue(var10000, "txt");
-                        //String var2 = "Response: %s";
-                        //Object[] var3 = new Object[]{response.toString()};
-                        //boolean var4 = false;
-                        //String var10001 = String.format(var2, Arrays.copyOf(var3, var3.length));
-                        //Intrinsics.checkNotNullExpressionValue(var10001, "java.lang.String.format(this, *args)");
-                        //var10000.setText((CharSequence)var10001);
-                    }
-                }), (Response.ErrorListener) (new Response.ErrorListener() {
-                    public final void onErrorResponse(VolleyError error) {
-                        //TextView var10000 = txt;
-                        //Intrinsics.checkNotNullExpressionValue(var10000, "txt");
-                        //var10000.setText((CharSequence)error.toString());
-                    }
-                }));
-                queue.add((Request) jsonObjectRequest);
+            if (detection_state == false) {
+//                final JSONObject req_data = new JSONObject();
+//                try {
+//                    req_data.put("tripid", kelione);
+//                    req_data.put("userid", ats);
+////                    req_data.put("speed", nCurrentSpeed);
+//                    req_data.put("speed", vid_greitis);
+//                } catch (JSONException e) {
+//                    e.printStackTrace();
+//                }
+//
+//                JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(1, url, req_data, (Response.Listener) (new Response.Listener() {
+//                    public void onResponse(Object var1) {
+//                        this.onResponse((JSONObject) var1);
+//                    }
+//
+//                    public final void onResponse(JSONObject response) {
+//                    }
+//                }), (Response.ErrorListener) (new Response.ErrorListener() {
+//                    public final void onErrorResponse(VolleyError error) {
+//                    }
+//                }));
+//                queue.add((Request) jsonObjectRequest);
 
 
             }

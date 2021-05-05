@@ -71,7 +71,7 @@
                 android:layout_height="wrap_content"
                 android:layout_centerInParent="true"
                 android:layout_marginRight="10dp"
-                android:text="Distance: 0 meters"
+                android:text="Distance: 0 kilometers"
                 android:textSize="24sp" />
 
             <TextView
