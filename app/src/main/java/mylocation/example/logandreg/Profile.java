@@ -154,10 +154,10 @@ public class Profile extends AppCompatActivity implements NavigationView.OnNavig
                         return true;
                     case R.id.nav_profile:
                         return true;
-                    case R.id.nav_about:
-                        startActivity(new Intent(getApplicationContext(),About.class));
-                        overridePendingTransition(0, 0);
-                        return true;
+//                    case R.id.nav_about:
+//                        startActivity(new Intent(getApplicationContext(),About.class));
+//                        overridePendingTransition(0, 0);
+//                        return true;
                 }
                 return false;
             }
@@ -184,10 +184,10 @@ public class Profile extends AppCompatActivity implements NavigationView.OnNavig
                 return true;
             case R.id.nav_profile:
                 return true;
-            case R.id.nav_about:
-                startActivity(new Intent(getApplicationContext(), About.class));
-                overridePendingTransition(0, 0);
-                return true;
+//            case R.id.nav_about:
+//                startActivity(new Intent(getApplicationContext(), About.class));
+//                overridePendingTransition(0, 0);
+//                return true;
             case R.id.nav_logout:
                 Intent LoginIntent = new Intent (Profile.this, MainActivity.class);
                 Toast.makeText(Profile.this, "Logged out", Toast.LENGTH_SHORT).show();

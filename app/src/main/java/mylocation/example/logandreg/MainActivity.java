@@ -120,6 +120,7 @@ public class MainActivity extends AppCompatActivity {
                 RequestQueue requestQueue = Volley.newRequestQueue(MainActivity.this);
                 String URL = "http://78.60.2.145:8001/registracija2/";
                 final String TAG ="MainActivity";
+                String finalUser = user;
                 JsonObjectRequest objectRequest = new JsonObjectRequest(Request.Method.POST, URL, req_data, new Response.Listener<JSONObject>() {
                     @Override
                     public void onResponse(JSONObject response) {
@@ -129,18 +130,18 @@ public class MainActivity extends AppCompatActivity {
                             ats = jsonObject.getInt("id");
                             kelione = jsonObject.getInt("tripid");
                             email = jsonObject.getString("email");
-                            username = user;
+                            username = finalUser;
                             //Log.d(TAG, "objektas: " + response);
                             Log.d(TAG, "objektas123: " + ats);
                             Log.d(TAG, "keliones id: " + kelione);
                             Log.d(TAG, "email: " + email);
                             // if(jsonObject.names().get(0).equals("id")){
-                            if(savelogincheckbox.isChecked()){
-                                editor.putBoolean("savelogin", true);
-                                editor.putString("username", user);
-                                editor.putString("password", pwd);
-                                editor.commit();
-                            }
+//                            if(savelogincheckbox.isChecked()){
+//                                editor.putBoolean("savelogin", true);
+//                                editor.putString("username", user);
+//                                editor.putString("password", pwd);
+//                                editor.commit();
+//                            }
 
                             Toast.makeText(MainActivity.this, "Successfully logged in", Toast.LENGTH_SHORT).show();
                             Intent mapsactivityIntent = new Intent (MainActivity.this, MapsActivity.class);
@@ -170,6 +171,35 @@ public class MainActivity extends AppCompatActivity {
                 requestQueue.add(objectRequest);
 
 
+                try {
+                    user = encrypt(user, raktas);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+
+                try {
+                    pwd = encrypt(pwd, raktas);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+
+                if(savelogincheckbox.isChecked()){
+                    editor.putBoolean("savelogin", true);
+                    try {
+                        user = decrypt(user, raktas);
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                    try {
+                        pwd = decrypt(pwd, raktas);
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+
+                    editor.putString("username", user);
+                    editor.putString("password", pwd);
+                    editor.commit();
+                }
 
 
 

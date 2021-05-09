@@ -287,10 +287,10 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
                         startActivity(new Intent(getApplicationContext(),Profile.class));
                         overridePendingTransition(0, 0);
                         return true;
-                    case R.id.nav_about:
-                        startActivity(new Intent(getApplicationContext(),About.class));
-                        overridePendingTransition(0, 0);
-                        return true;
+//                    case R.id.nav_about:
+//                        startActivity(new Intent(getApplicationContext(),About.class));
+//                        overridePendingTransition(0, 0);
+//                        return true;
                 }
                 return false;
             }
@@ -334,6 +334,9 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
                     detection_state = false;
                     Log.d(TAG, "stop trip");
                     timerTask.cancel();
+                    tv_time.setText(formatTime(0,0,0));
+                    tv_speed.setText("Speed : 0 km/h");
+                    tv_distance.setText("Distance = 0 kilometers");
 
 
                     vid_greitis = distance;
@@ -372,10 +375,10 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
                     //Duomenu isvedimas
                     AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(MapsActivity.this);
 
-                    alertDialogBuilder.setTitle("Kelionės rezultatai");
+                    alertDialogBuilder.setTitle("Your trip results:");
 
-                    alertDialogBuilder.setMessage("Atstumas: "+(float) distance + " km\n" + "Laikas: " + getTimerText()
-                            + "\n" + "Kelionės vidutinis greitis: " + vid_greitis  + " km/h");
+                    alertDialogBuilder.setMessage("Distance: "+(float) distance + " km\n" + "Duration: " + getTimerText()
+                            + "\n" + "Average speed: " + vid_greitis  + " km/h");
 
                     alertDialogBuilder.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
                         @Override
@@ -831,43 +834,9 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
     private void updateSpeed(CLocation location){
 
         float nCurrentSpeed = 0;
-        ///
-        final String url = "http://78.60.2.145:8001/speed/";
-        final RequestQueue queue = Volley.newRequestQueue((Context)this);
-
         if(location != null) {
             location.setUserMetricUnits(this.useMetricUnits());
             nCurrentSpeed = location.getSpeed();
-            //Log.d(TAG, "updateSpeed: " + location.getSpeed());
-
-
-            /// GREITIS ///
-            if (detection_state == false) {
-//                final JSONObject req_data = new JSONObject();
-//                try {
-//                    req_data.put("tripid", kelione);
-//                    req_data.put("userid", ats);
-////                    req_data.put("speed", nCurrentSpeed);
-//                    req_data.put("speed", vid_greitis);
-//                } catch (JSONException e) {
-//                    e.printStackTrace();
-//                }
-//
-//                JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(1, url, req_data, (Response.Listener) (new Response.Listener() {
-//                    public void onResponse(Object var1) {
-//                        this.onResponse((JSONObject) var1);
-//                    }
-//
-//                    public final void onResponse(JSONObject response) {
-//                    }
-//                }), (Response.ErrorListener) (new Response.ErrorListener() {
-//                    public final void onErrorResponse(VolleyError error) {
-//                    }
-//                }));
-//                queue.add((Request) jsonObjectRequest);
-
-
-            }
         }
 
         Formatter fmt = new Formatter(new StringBuilder());
@@ -880,6 +849,9 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
 //            tv_speed.setText("Speed: "+ strCurrentSpeed + " miles/h");
 //        } else {
             tv_speed.setText("Speed: "+ strCurrentSpeed + " km/h");
+            if (detection_state == false){
+                tv_speed.setText("Speed : 0 km/h");
+            }
         }
     }
 
@@ -941,10 +913,10 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
                     startActivity(new Intent(getApplicationContext(),Profile.class));
                     overridePendingTransition(0, 0);
                     return true;
-                case R.id.nav_about:
-                    startActivity(new Intent(getApplicationContext(),About.class));
-                    overridePendingTransition(0, 0);
-                    return true;
+//                case R.id.nav_about:
+//                    startActivity(new Intent(getApplicationContext(),About.class));
+//                    overridePendingTransition(0, 0);
+//                    return true;
                 case R.id.nav_logout:
                     Intent LoginIntent = new Intent (MapsActivity.this, MainActivity.class);
                     Toast.makeText(MapsActivity.this, "Logged out", Toast.LENGTH_SHORT).show();

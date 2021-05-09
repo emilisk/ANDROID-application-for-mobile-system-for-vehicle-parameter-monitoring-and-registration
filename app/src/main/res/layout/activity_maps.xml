@@ -80,7 +80,7 @@
                 android:layout_height="wrap_content"
                 android:layout_centerInParent="true"
                 android:layout_marginRight="10dp"
-                android:text="Time: 0"
+                android:text="Duration: 00 : 00 : 00"
                 android:textSize="24sp" />
 
 
