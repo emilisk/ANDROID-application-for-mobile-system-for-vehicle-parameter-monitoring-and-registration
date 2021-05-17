@@ -62,7 +62,7 @@
 
     <com.google.android.material.textfield.TextInputLayout
         android:layout_width="match_parent"
-        android:layout_height="100dp"
+        android:layout_height="75dp"
         android:layout_marginTop="155dp"
         android:hint="User ID">
 
@@ -77,8 +77,8 @@
 
     <com.google.android.material.textfield.TextInputLayout
         android:layout_width="match_parent"
-        android:layout_height="100dp"
-        android:layout_marginTop="255dp"
+        android:layout_height="75dp"
+        android:layout_marginTop="230dp"
         android:hint="Email">
 
         <com.google.android.material.textfield.TextInputEditText
@@ -92,8 +92,8 @@
 
     <com.google.android.material.textfield.TextInputLayout
         android:layout_width="match_parent"
-        android:layout_height="100dp"
-        android:layout_marginTop="355dp"
+        android:layout_height="75dp"
+        android:layout_marginTop="305dp"
         android:hint="Username">
 
         <com.google.android.material.textfield.TextInputEditText
@@ -107,8 +107,8 @@
 
     <com.google.android.material.textfield.TextInputLayout
         android:layout_width="match_parent"
-        android:layout_height="100dp"
-        android:layout_marginTop="455dp"
+        android:layout_height="75dp"
+        android:layout_marginTop="380dp"
         android:hint="Number of trips">
 
         <com.google.android.material.textfield.TextInputEditText
@@ -116,6 +116,21 @@
             android:layout_height="match_parent"
             android:text="Total number of your trips:"
             android:id="@+id/tripkeitimas"
+            android:drawablePadding="10dp"/>
+
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <com.google.android.material.textfield.TextInputLayout
+        android:layout_width="match_parent"
+        android:layout_height="75dp"
+        android:layout_marginTop="455dp"
+        android:hint="Total distance of all trips">
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:text="Total distance:"
+            android:id="@+id/tripdistance"
             android:drawablePadding="10dp"/>
 
     </com.google.android.material.textfield.TextInputLayout>

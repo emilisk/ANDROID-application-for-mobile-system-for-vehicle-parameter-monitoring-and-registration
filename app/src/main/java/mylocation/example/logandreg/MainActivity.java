@@ -48,6 +48,7 @@ public class MainActivity extends AppCompatActivity {
 
     static String email;
     static String username;
+    static String distance;
     static int ats;
     static int kelione;
     static int ats2;
@@ -130,11 +131,13 @@ public class MainActivity extends AppCompatActivity {
                             ats = jsonObject.getInt("id");
                             kelione = jsonObject.getInt("tripid");
                             email = jsonObject.getString("email");
+                            distance = jsonObject.getString("kelias");
                             username = finalUser;
                             //Log.d(TAG, "objektas: " + response);
                             Log.d(TAG, "objektas123: " + ats);
                             Log.d(TAG, "keliones id: " + kelione);
                             Log.d(TAG, "email: " + email);
+                            Log.d(TAG, "Distance: " + distance);
                             // if(jsonObject.names().get(0).equals("id")){
 //                            if(savelogincheckbox.isChecked()){
 //                                editor.putBoolean("savelogin", true);

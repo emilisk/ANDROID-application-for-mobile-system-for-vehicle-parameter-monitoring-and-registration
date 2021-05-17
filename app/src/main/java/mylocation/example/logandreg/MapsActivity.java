@@ -13,6 +13,7 @@ import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
 import android.location.Address;
+import android.location.Criteria;
 import android.location.Geocoder;
 import android.location.Location;
 import android.location.LocationListener;
@@ -84,12 +85,32 @@ import static mylocation.example.logandreg.MainActivity.kelione;
 public class MapsActivity extends AppCompatActivity implements OnMapReadyCallback, GoogleMap.OnMapLongClickListener,
         GoogleMap.OnMarkerDragListener, LocationListener, SensorEventListener, NavigationView.OnNavigationItemSelectedListener {
 
-    private static final String TAG ="MapsActivity";
+    private static final String TAG = "MapsActivity";
     private GoogleMap mMap;
     private Geocoder geocoder;
     private int ACCESS_LOCATION_REQUEST_CODE = 10001;
     FusedLocationProviderClient fusedLocationProviderClient;
     LocationRequest locationRequest;
+
+
+    // duobes trys asys
+
+    double latitude1;
+    double longitude1;
+    double ax1, ay1, az1;
+    private double mAccel;
+    private double mAccelCurrent;
+    private double mAccelLast;
+    Location loc;
+    Location location;
+    protected LocationManager locationManager;
+    boolean isGPSEnabled = false;
+    boolean canGetLocation = false;
+    Criteria criteria;
+    boolean isNetworkEnabled;
+    String bestProvider;
+
+    //
 
 
     //vidutinis greitis
@@ -107,9 +128,9 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
 
 
     // Distance
-    Location currLocation,prevLocation;
-    Boolean isInitialized=false;
-    float distance=0.0f;
+    Location currLocation, prevLocation;
+    Boolean isInitialized = false;
+    float distance = 0.0f;
     //
 
     Marker userLocationMarker;
@@ -136,10 +157,11 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
     Toolbar toolbar = null;
 
     double ax, ay, az;
+    double aysenas = 0;
 
     boolean detection_state = false;
 
-    int tripid=0;
+    int tripid = 0;
 
     private Handler mHandler = new Handler();
 
@@ -152,15 +174,15 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
 
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
-        switch (item.getItemId()){
+        switch (item.getItemId()) {
 
-            case R.id.logout:{
-                Intent LoginIntent = new Intent (MapsActivity.this, MainActivity.class);
+            case R.id.logout: {
+                Intent LoginIntent = new Intent(MapsActivity.this, MainActivity.class);
                 Toast.makeText(MapsActivity.this, "Logged out", Toast.LENGTH_SHORT).show();
                 startActivity(LoginIntent);
                 return true;
             }
-            case R.id.Exit:{
+            case R.id.Exit: {
                 AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(this);
 
                 alertDialogBuilder.setTitle("Confirm Exit..");
@@ -213,6 +235,12 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_maps);
 
+
+        sensorManager = (SensorManager) getSystemService(SENSOR_SERVICE);
+        sensorManager.registerListener(this, sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER),
+                SensorManager.SENSOR_DELAY_NORMAL);
+
+
         timer = new Timer();
 
         Toolbar toolbar = findViewById(R.id.toolbar);
@@ -256,10 +284,9 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
 //        zValue = (TextView) findViewById(R.id.zValue);
 
 
-
         Intent intent = getIntent();
-        int ats =  intent.getIntExtra(MainActivity.EXTRA_NUMBER,0);
-        int kelione =  intent.getIntExtra(MainActivity.EXTRA_NUMBER_KID,0);
+        int ats = intent.getIntExtra(MainActivity.EXTRA_NUMBER, 0);
+        int kelione = intent.getIntExtra(MainActivity.EXTRA_NUMBER_KID, 0);
         Log.d(TAG, "reiksme: " + ats);
         Log.d(TAG, "reiksme: " + kelione);
 
@@ -280,11 +307,11 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         bottomNavigationView.setOnNavigationItemSelectedListener(new BottomNavigationView.OnNavigationItemSelectedListener() {
             @Override
             public boolean onNavigationItemSelected(@NonNull MenuItem item) {
-                switch (item.getItemId()){
+                switch (item.getItemId()) {
                     case R.id.nav_main:
                         return true;
                     case R.id.nav_profile:
-                        startActivity(new Intent(getApplicationContext(),Profile.class));
+                        startActivity(new Intent(getApplicationContext(), Profile.class));
                         overridePendingTransition(0, 0);
                         return true;
 //                    case R.id.nav_about:
@@ -295,8 +322,6 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
                 return false;
             }
         });
-
-
 
 
         Log.d(TAG, "onCreate: Initializing Sensor Services");
@@ -327,20 +352,20 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
                     distance = 0;
                     time2 = 0.0;
                     timerStarted = false;
-                    tv_time.setText(formatTime(0,0,0));
+                    tv_time.setText(formatTime(0, 0, 0));
                 } else {
                     //button.setBackgroundColor(getResources().getColor(grayTranslucent));
                     Toast.makeText(MapsActivity.this, "Stopped", Toast.LENGTH_LONG).show();
                     detection_state = false;
                     Log.d(TAG, "stop trip");
                     timerTask.cancel();
-                    tv_time.setText(formatTime(0,0,0));
+                    tv_time.setText(formatTime(0, 0, 0));
                     tv_speed.setText("Speed : 0 km/h");
                     tv_distance.setText("Distance = 0 kilometers");
 
 
                     vid_greitis = distance;
-                    laikas = ((float)seconds / 3600) + ((float)minutes / 60) + (float)hours;
+                    laikas = ((float) seconds / 3600) + ((float) minutes / 60) + (float) hours;
                     vid_greitis = distance / laikas;
                     vid_greitis = (float) (Math.floor(vid_greitis * 100) / 100);
                     Log.d(TAG, "Vidutinis greitis: " + vid_greitis);
@@ -377,8 +402,8 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
 
                     alertDialogBuilder.setTitle("Your trip results:");
 
-                    alertDialogBuilder.setMessage("Distance: "+(float) distance + " km\n" + "Duration: " + getTimerText()
-                            + "\n" + "Average speed: " + vid_greitis  + " km/h");
+                    alertDialogBuilder.setMessage("Distance: " + (float) distance + " km\n" + "Duration: " + getTimerText()
+                            + "\n" + "Average speed: " + vid_greitis + " km/h");
 
                     alertDialogBuilder.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
                         @Override
@@ -397,9 +422,9 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         //
 
 
-        if(ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
-                != PackageManager.PERMISSION_GRANTED){
-            requestPermissions(new String[] {Manifest.permission.ACCESS_FINE_LOCATION}, 1000);
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
+                != PackageManager.PERMISSION_GRANTED) {
+            requestPermissions(new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 1000);
         } else if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
                 == PackageManager.PERMISSION_GRANTED) {
             doStuff();
@@ -415,23 +440,16 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
 //        });
 
 
-
-
     }
 
 
-    private void startTimer()
-    {
-        timerTask = new TimerTask()
-        {
+    private void startTimer() {
+        timerTask = new TimerTask() {
             @Override
-            public void run()
-            {
-                runOnUiThread(new Runnable()
-                {
+            public void run() {
+                runOnUiThread(new Runnable() {
                     @Override
-                    public void run()
-                    {
+                    public void run() {
                         time2++;
                         tv_time.setText(getTimerText());
                     }
@@ -439,12 +457,11 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
             }
 
         };
-        timer.scheduleAtFixedRate(timerTask, 0 ,1000);
+        timer.scheduleAtFixedRate(timerTask, 0, 1000);
     }
 
 
-    private String getTimerText()
-    {
+    private String getTimerText() {
         int rounded = (int) Math.round(time2);
 
         seconds = ((rounded % 86400) % 3600) % 60;
@@ -452,14 +469,12 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         hours = ((rounded % 86400) / 3600);
 
 
-
         return formatTime(seconds, minutes, hours);
     }
 
     @SuppressLint("DefaultLocale")
-    private String formatTime(int seconds, int minutes, int hours)
-    {
-        return String.format("%02d",hours) + " : " + String.format("%02d",minutes) + " : " + String.format("%02d",seconds);
+    private String formatTime(int seconds, int minutes, int hours) {
+        return String.format("%02d", hours) + " : " + String.format("%02d", minutes) + " : " + String.format("%02d", seconds);
 
 
     }
@@ -489,13 +504,12 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
 
 
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager
-        .PERMISSION_GRANTED) {
+                .PERMISSION_GRANTED) {
             //enableUserLocation();
             //zoomToUserLocation();
         } else {
 //            askLocationPermission();
         }
-
 
 
         // Add a marker in Sydney and move the camera
@@ -526,22 +540,22 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
 
     }
 
-    LocationCallback locationCallback = new LocationCallback(){
+    LocationCallback locationCallback = new LocationCallback() {
         @Override
         public void onLocationResult(LocationResult locationResult) {
             super.onLocationResult(locationResult);
 //            Log.d(TAG, "onLocationResult: " + locationResult.getLastLocation());
-            if (mMap != null){
+            if (mMap != null) {
                 setUserLocationMarker(locationResult.getLastLocation());
             }
         }
     };
 
-    private void setUserLocationMarker(Location location){
+    private void setUserLocationMarker(Location location) {
 
         LatLng latLng = new LatLng(location.getLatitude(), location.getLongitude());
 
-        if (userLocationMarker == null){
+        if (userLocationMarker == null) {
             // we create a new marker
             MarkerOptions markerOptions = new MarkerOptions();
             markerOptions.position(latLng);
@@ -556,7 +570,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
             userLocationMarker.setRotation(location.getBearing());
             mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, 17));
         }
-        if(userLocationAccuracyCircle == null){
+        if (userLocationAccuracyCircle == null) {
             CircleOptions circleOptions = new CircleOptions();
             circleOptions.center(latLng);
             circleOptions.strokeWidth(4);
@@ -571,19 +585,19 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
     }
 
     @SuppressLint("MissingPermission")
-    private void startLocationUpdates(){
+    private void startLocationUpdates() {
         fusedLocationProviderClient.requestLocationUpdates(locationRequest, locationCallback, Looper.getMainLooper());
     }
 
-    private void stopLocationUpdates(){
+    private void stopLocationUpdates() {
         fusedLocationProviderClient.removeLocationUpdates(locationCallback);
     }
 
     @Override
     protected void onStart() {
         super.onStart();
-        if(ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager
-                .PERMISSION_GRANTED){
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager
+                .PERMISSION_GRANTED) {
             startLocationUpdates();
         } else {
 //            askLocationPermission();
@@ -598,11 +612,11 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
     }
 
     @SuppressLint("MissingPermission")
-    private void enableUserLocation(){
+    private void enableUserLocation() {
         mMap.setMyLocationEnabled(true);
     }
 
-    private void zoomToUserLocation(){
+    private void zoomToUserLocation() {
         @SuppressLint("MissingPermission")
         Task<Location> locationTask = fusedLocationProviderClient.getLastLocation();
         locationTask.addOnSuccessListener(new OnSuccessListener<Location>() {
@@ -617,10 +631,10 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
 
     @Override
     public void onMapLongClick(LatLng latLng) {
-        Log.d(TAG, "onMapLongClick: "+ latLng.toString());
+        Log.d(TAG, "onMapLongClick: " + latLng.toString());
         try {
             List<Address> addresses = geocoder.getFromLocation(latLng.latitude, latLng.longitude, 1);
-            if (addresses.size() > 0){
+            if (addresses.size() > 0) {
                 Address address = addresses.get(0);
                 String streetAddress = address.getAddressLine(0);
                 mMap.addMarker(new MarkerOptions()
@@ -650,7 +664,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         LatLng latLng = marker.getPosition();
         try {
             List<Address> addresses = geocoder.getFromLocation(latLng.latitude, latLng.longitude, 1);
-            if (addresses.size() > 0){
+            if (addresses.size() > 0) {
                 Address address = addresses.get(0);
                 String streetAddress = address.getAddressLine(0);
                 marker.setTitle(streetAddress);
@@ -662,8 +676,8 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
 
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-        if(requestCode == ACCESS_LOCATION_REQUEST_CODE && requestCode == 1000){
-            if(grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED){
+        if (requestCode == ACCESS_LOCATION_REQUEST_CODE && requestCode == 1000) {
+            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                 enableUserLocation();
                 zoomToUserLocation();
 //                doStuff();
@@ -675,126 +689,125 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
     }
 
 
-
-
-
     // koordinatems
 
-        @SuppressLint("DefaultLocale")
-        @Override
-        public void onLocationChanged(@NonNull Location location) {
+    @SuppressLint("DefaultLocale")
+    @Override
+    public void onLocationChanged(@NonNull Location location) {
 
-            float latitude = 0;
-            float longitude = 0;
-            final String url = "http://78.60.2.145:8001/location/";
-            final RequestQueue queue = Volley.newRequestQueue((Context)this);
+        float latitude = 0;
+        float longitude = 0;
+        final String url = "http://78.60.2.145:8001/location/";
+        final RequestQueue queue = Volley.newRequestQueue((Context) this);
 
-            if(location != null) {
-                CLocation myLocation = new CLocation(location, this.useMetricUnits());
-                this.updateSpeed(myLocation);
+        if (location != null) {
+            CLocation myLocation = new CLocation(location, this.useMetricUnits());
+            this.updateSpeed(myLocation);
 
 
-                if (!isInitialized && detection_state == true ) {
+            if (!isInitialized && detection_state == true) {
 
-                    prevLocation = location;
-                    currLocation = location;
-                    isInitialized = true;
-                    tv_distance.setText("Distance = 0 meters");
+                prevLocation = location;
+                currLocation = location;
+                isInitialized = true;
+                tv_distance.setText("Distance = 0 meters");
 
-                } else if (detection_state == true && isInitialized == true){
-                    if (timerStarted == false) {
-                        timerStarted = true;
-                        startTimer();
-                    }
-                    prevLocation = currLocation;
-                    currLocation = location;
-                    distance+= (prevLocation.distanceTo(currLocation)/1000);
-                    distance = (float) (Math.floor(distance * 100) / 100);
-                    tv_distance.setText("Distance = "+distance+" kilometers");
+            } else if (detection_state == true && isInitialized == true) {
+                if (timerStarted == false) {
+                    timerStarted = true;
+                    startTimer();
+                }
+                prevLocation = currLocation;
+                currLocation = location;
+                distance += (prevLocation.distanceTo(currLocation) / 1000);
+                distance = (float) (Math.floor(distance * 100) / 100);
+                tv_distance.setText("Distance = " + distance + " kilometers");
 
 //                    Log.d(TAG, "onLocationResult: " + location.getLatitude());
 //                    Log.d(TAG, "onLocationResult: " + location.getLongitude());
 
-                    latitude = (float) location.getLatitude();
-                    longitude = (float) location.getLongitude();
+                latitude = (float) location.getLatitude();
+                longitude = (float) location.getLongitude();
 
-                    Calendar calendar = Calendar.getInstance();
-                    SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
-                    String dateTime = simpleDateFormat.format(calendar.getTime());
+                Calendar calendar = Calendar.getInstance();
+                SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
+                String dateTime = simpleDateFormat.format(calendar.getTime());
 
-                    final JSONObject req_data = new JSONObject();
-                    try {
-                        req_data.put("tripid", kelione);
-                        req_data.put("userid", ats);
-                        req_data.put("latitude", latitude);
-                        req_data.put("longitude", longitude);
-                        req_data.put("laikas", dateTime);
-                        req_data.put("distance", distance);
-                        req_data.put("keliones_laikas", getTimerText());
-                    } catch (JSONException e) {
-                        e.printStackTrace();
+                final JSONObject req_data = new JSONObject();
+                try {
+                    req_data.put("tripid", kelione);
+                    req_data.put("userid", ats);
+                    req_data.put("latitude", latitude);
+                    req_data.put("longitude", longitude);
+                    req_data.put("laikas", dateTime);
+                    req_data.put("distance", distance);
+                    req_data.put("keliones_laikas", getTimerText());
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+//                    Log.d(TAG, "Lokacijos platuma: " + latitude);
+//                    Log.d(TAG, "Lokacijos ilguma: " + longitude);
+//                    Log.d(TAG, "Laikas: " + dateTime);
+//                    Log.d(TAG, "Distancija: " + distance);
+//                    Log.d(TAG, "Keliones laikas: " + getTimerText());
+
+                JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(1, url, req_data, (Response.Listener) (new Response.Listener() {
+                    public void onResponse(Object var1) {
+                        this.onResponse((JSONObject) var1);
                     }
 
-                    JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(1, url, req_data, (Response.Listener) (new Response.Listener() {
-                        public void onResponse(Object var1) {
-                            this.onResponse((JSONObject) var1);
-                        }
-
-                        public final void onResponse(JSONObject response) {
-                        }
-                    }), (Response.ErrorListener) (new Response.ErrorListener() {
-                        public final void onErrorResponse(VolleyError error) {
-                        }
-                    }));
-                    queue.add((Request) jsonObjectRequest);
-                }
-
-
-                double aysenas = 0.1;
-                if (detection_state == true && (ay - aysenas > 0.02)) {
-
-                    aysenas = ay;
-
-                    final String url2 = "http://78.60.2.145:8001/duobes/";
-                    latitude = (float) location.getLatitude();
-                    longitude = (float) location.getLongitude();
-
-                    final JSONObject req_data = new JSONObject();
-                    try {
-                        req_data.put("tripid", kelione);
-                        req_data.put("userid", ats);
-                        req_data.put("latitude", latitude);
-                        req_data.put("longitude", longitude);
-                    } catch (JSONException e) {
-                        e.printStackTrace();
+                    public final void onResponse(JSONObject response) {
                     }
-                    Log.d(TAG, "Akselerometras x siuncia: " + ax);
-                    Log.d(TAG, "Akselerometras y siuncia: " + ay);
-                    Log.d(TAG, "Akselerometras z siuncia: " + az);
-                    Log.d(TAG, "Akselerometras aysenas siuncia: " + aysenas);
-
-                    JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(1, url2, req_data, (Response.Listener) (new Response.Listener() {
-                        public void onResponse(Object var1) {
-                            this.onResponse((JSONObject) var1);
-                        }
-
-                        public final void onResponse(JSONObject response) {
-                        }
-                    }), (Response.ErrorListener) (new Response.ErrorListener() {
-                        public final void onErrorResponse(VolleyError error) {
-                        }
-                    }));
-                    queue.add((Request) jsonObjectRequest);
+                }), (Response.ErrorListener) (new Response.ErrorListener() {
+                    public final void onErrorResponse(VolleyError error) {
+                    }
+                }));
+                queue.add((Request) jsonObjectRequest);
+            }
 
 
+            if (detection_state == true && (az > 10.60)) {
+                Log.d(TAG, "Akselerometras aysenas siuncia1: " + aysenas);
+                Log.d(TAG, "Skirtumas: " + (ax - aysenas));
+                aysenas = ay;
+
+                final String url2 = "http://78.60.2.145:8001/duobes/";
+                latitude = (float) location.getLatitude();
+                longitude = (float) location.getLongitude();
+
+                final JSONObject req_data = new JSONObject();
+                try {
+                    req_data.put("tripid", kelione);
+                    req_data.put("userid", ats);
+                    req_data.put("latitude", latitude);
+                    req_data.put("longitude", longitude);
+                } catch (JSONException e) {
+                    e.printStackTrace();
                 }
+                Log.d(TAG, "Akselerometras x siuncia: " + ax);
+                Log.d(TAG, "Akselerometras y siuncia: " + ay);
+                Log.d(TAG, "Akselerometras z siuncia: " + az);
+                Log.d(TAG, "Akselerometras aysenas siuncia2: " + aysenas);
 
+                JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(1, url2, req_data, (Response.Listener) (new Response.Listener() {
+                    public void onResponse(Object var1) {
+                        this.onResponse();
+                    }
 
-
+                    public final void onResponse() {
+                    }
+                }), (Response.ErrorListener) (new Response.ErrorListener() {
+                    public final void onErrorResponse(VolleyError error) {
+                    }
+                }));
+                queue.add((Request) jsonObjectRequest);
 
 
             }
-                    }
+
+
+        }
+    }
 
 
     private Runnable mRunnable = new Runnable() {
@@ -821,20 +834,19 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
     }
 
     @SuppressLint("MissingPermission")
-    public void doStuff(){
-                LocationManager locationManager = (LocationManager) this.getSystemService(Context.LOCATION_SERVICE);
-                if (locationManager != null) {
-                    locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, this);
-                }
-                Toast.makeText(this, "Waiting for GPS connection", Toast.LENGTH_SHORT).show();
-            }
+    public void doStuff() {
+        LocationManager locationManager = (LocationManager) this.getSystemService(Context.LOCATION_SERVICE);
+        if (locationManager != null) {
+            locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, this);
+        }
+        Toast.makeText(this, "Waiting for GPS connection", Toast.LENGTH_SHORT).show();
+    }
 
 
-
-    private void updateSpeed(CLocation location){
+    private void updateSpeed(CLocation location) {
 
         float nCurrentSpeed = 0;
-        if(location != null) {
+        if (location != null) {
             location.setUserMetricUnits(this.useMetricUnits());
             nCurrentSpeed = location.getSpeed();
         }
@@ -845,17 +857,17 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         strCurrentSpeed = strCurrentSpeed.replace(" ", "0");
 
 
-        if(this.useMetricUnits() == false){
+        if (this.useMetricUnits() == false) {
 //            tv_speed.setText("Speed: "+ strCurrentSpeed + " miles/h");
 //        } else {
-            tv_speed.setText("Speed: "+ strCurrentSpeed + " km/h");
-            if (detection_state == false){
+            tv_speed.setText("Speed: " + strCurrentSpeed + " km/h");
+            if (detection_state == false) {
                 tv_speed.setText("Speed : 0 km/h");
             }
         }
     }
 
-    private boolean useMetricUnits(){
+    private boolean useMetricUnits() {
         return false;
     }
 
@@ -864,13 +876,230 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
 
     }
 
+//    public Location getLocation() {
+//        try {
+//            locationManager = (LocationManager) this
+//                    .getSystemService(LOCATION_SERVICE);
+//
+//            // getting GPS status
+//            isGPSEnabled = locationManager
+//                    .isProviderEnabled(LocationManager.GPS_PROVIDER);
+//
+//            // getting network status
+//            isNetworkEnabled = locationManager
+//                    .isProviderEnabled(LocationManager.NETWORK_PROVIDER);
+//
+//            if (!isGPSEnabled && !isNetworkEnabled) {
+//                // no network provider is enabled
+//                Log.d(TAG, " no network provider is enabled");
+//            } else {
+//                this.canGetLocation = true;
+//                // First get location from Network Provider
+//                if (isNetworkEnabled) {
+//                    locationManager.requestLocationUpdates(
+//                            LocationManager.NETWORK_PROVIDER,
+//                            1000,
+//                            1, this);
+//                    Log.d(TAG, "Network");
+//                    if (locationManager != null) {
+//                        location = locationManager
+//                                .getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
+//                        if (location != null) {
+//                            latitude1 = location.getLatitude();
+//                            longitude1 = location.getLongitude();
+//                        }
+//                    }
+//                }
+//                // if GPS Enabled get lat/long using GPS Services
+//                if (isGPSEnabled) {
+//                    if (location == null) {
+//                        locationManager.requestLocationUpdates(
+//                                LocationManager.GPS_PROVIDER,
+//                                1000,
+//                                1, this);
+//                        Log.d(TAG, "GPS Enabled");
+//                        if (locationManager != null) {
+//                            location = locationManager
+//                                    .getLastKnownLocation(LocationManager.GPS_PROVIDER);
+//                            if (location != null) {
+//                                latitude1 = location.getLatitude();
+//                                longitude1 = location.getLongitude();
+//                            }
+//                        }
+//                    }
+//                }
+//            }
+//
+//        } catch (Exception e) {
+//            e.printStackTrace();
+//        }
+//
+//        return location;
+//    }
+
     @Override
     public void onSensorChanged(SensorEvent sensorEvent) {
 //        Log.d(TAG, "onSensorChanged: X: " +sensorEvent.values[0] + "Y: " + sensorEvent.values[1] + "Z: " + sensorEvent.values[2]);
         ax = sensorEvent.values[0];
         ay = sensorEvent.values[1];
         az = sensorEvent.values[2];
+
+
+//        if (sensorEvent.sensor.getType() == Sensor.TYPE_ACCELEROMETER) {
+//            ax1 = sensorEvent.values[0];
+//            ay1 = sensorEvent.values[1];
+//            az1 = sensorEvent.values[2];
+//            mAccelLast = mAccelCurrent;
+//            mAccelCurrent = Math.sqrt(ax1 * ax1 + ay1 * ay1 + az1 * az1);
+//            double delta = mAccelCurrent - mAccelLast;
+//            mAccel = mAccel * 0.9f + delta;
+//
+//
+//            int temp = compare((int) ax1, (int) ay1, (int) az1);
+//
+//            if (temp == 0) {
+//                if ((mAccelLast - mAccelCurrent) > 7) {
+//                    Log.d(TAG, "pothole x1");
+//                    if (loc == null) {
+//                        loc = getLocation();
+//                    }
+//                    if (loc != null) {
+//                        loc = getLocation();
+//                    }
+////                    double latitude1 = loc.getLatitude();
+////                    double longitude1 = loc.getLongitude();
+//
+//                    final RequestQueue queue = Volley.newRequestQueue((Context) this);
+//                    final String url2 = "http://78.60.2.145:8001/duobes/";
+//                    latitude1 = (float) loc.getLatitude();
+//                    longitude1 = (float) loc.getLongitude();
+//                    Log.d(TAG, "location : " + latitude1 + " " + longitude1);
+//
+//                    final JSONObject req_data = new JSONObject();
+//                    try {
+//                        req_data.put("tripid", kelione);
+//                        req_data.put("userid", ats);
+//                        req_data.put("latitude", latitude1);
+//                        req_data.put("longitude", longitude1);
+//                    } catch (JSONException e) {
+//                        e.printStackTrace();
+//                    }
+//                    JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(1, url2, req_data, (Response.Listener) (new Response.Listener() {
+//                        public void onResponse(Object var1) {
+//                            this.onResponse();
+//                        }
+//
+//                        public final void onResponse() {
+//                        }
+//                    }), (Response.ErrorListener) (new Response.ErrorListener() {
+//                        public final void onErrorResponse(VolleyError error) {
+//                        }
+//                    }));
+//                    queue.add((Request) jsonObjectRequest);
+//                }
+//            } else if (temp == 1) {
+//                if ((mAccelLast - mAccelCurrent) > 7) {
+//                    Log.d(TAG, "pothole y1");
+//                    if (loc == null) {
+//                        loc = getLocation();
+//                    }
+////                    double latitude1 = loc.getLatitude();
+////                    double longitude1 = loc.getLongitude();
+//                    if (loc != null) {
+//                        loc = getLocation();
+//                    }
+//
+//                    final RequestQueue queue = Volley.newRequestQueue((Context) this);
+//                    final String url2 = "http://78.60.2.145:8001/duobes/";
+//                    latitude1 = (float) loc.getLatitude();
+//                    longitude1 = (float) loc.getLongitude();
+//                    Log.d(TAG, "location : " + latitude1 + " " + longitude1);
+//
+//                    final JSONObject req_data = new JSONObject();
+//                    try {
+//                        req_data.put("tripid", kelione);
+//                        req_data.put("userid", ats);
+//                        req_data.put("latitude", latitude1);
+//                        req_data.put("longitude", longitude1);
+//                    } catch (JSONException e) {
+//                        e.printStackTrace();
+//                    }
+//                    JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(1, url2, req_data, (Response.Listener) (new Response.Listener() {
+//                        public void onResponse(Object var1) {
+//                            this.onResponse();
+//                        }
+//
+//                        public final void onResponse() {
+//                        }
+//                    }), (Response.ErrorListener) (new Response.ErrorListener() {
+//                        public final void onErrorResponse(VolleyError error) {
+//                        }
+//                    }));
+//                    queue.add((Request) jsonObjectRequest);
+//                }
+//            } else if (temp == 2) {
+//
+//                if ((mAccelLast - mAccelCurrent) > 7) {
+//                    Log.d(TAG, "pothole z1");
+//                    if (loc == null) {
+//                        loc = getLocation();
+//                    }
+//                    if (loc != null) {
+//                        loc = getLocation();
+//                    }
+////                    double latitude1 = loc.getLatitude();
+////                    double longitude1 = loc.getLongitude();
+//
+//                    final RequestQueue queue = Volley.newRequestQueue((Context) this);
+//                    final String url2 = "http://78.60.2.145:8001/duobes/";
+//                    latitude1 = (float) loc.getLatitude();
+//                    longitude1 = (float) loc.getLongitude();
+//                    Log.d(TAG, "location : " + latitude1 + " " + longitude1);
+//
+//                    final JSONObject req_data = new JSONObject();
+//                    try {
+//                        req_data.put("tripid", kelione);
+//                        req_data.put("userid", ats);
+//                        req_data.put("latitude", latitude1);
+//                        req_data.put("longitude", longitude1);
+//                    } catch (JSONException e) {
+//                        e.printStackTrace();
+//                    }
+//                    JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(1, url2, req_data, (Response.Listener) (new Response.Listener() {
+//                        public void onResponse(Object var1) {
+//                            this.onResponse();
+//                        }
+//
+//                        public final void onResponse() {
+//                        }
+//                    }), (Response.ErrorListener) (new Response.ErrorListener() {
+//                        public final void onErrorResponse(VolleyError error) {
+//                        }
+//                    }));
+//                    queue.add((Request) jsonObjectRequest);
+//                }
+//            }
+//        }
     }
+
+
+
+
+
+    private int compare(int ax1, int ay1, int az1) {
+        ax1 = Math.abs(ax1);
+        ay1 = Math.abs(ay1);
+        az1 = Math.abs(az1);
+        if (ax1 > ay1) {
+            if (ax1 > az1) return 0;
+        } else if (ay1 > az1) return 1;
+        else return 2;
+
+        return -1;
+    }
+
+
+
 
         private static MapsActivity lastPausedActivity = null;
 

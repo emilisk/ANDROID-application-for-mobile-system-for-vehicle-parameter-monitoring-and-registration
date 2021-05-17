@@ -124,7 +124,7 @@ public class About extends AppCompatActivity implements NavigationView.OnNavigat
 
         loadingurl();
         loadurl();
-
+        Log.d(TAG, "oaflalklagkslgdst: " + "gdskgsklgdsjlkglksdg");
 
 
         //Navigation drawer
@@ -181,32 +181,18 @@ public class About extends AppCompatActivity implements NavigationView.OnNavigat
             e.printStackTrace();
         }
 
-        JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(1, url, req_data, (Response.Listener) (new Response.Listener() {
-            @Override
-            public void onResponse(Object response) {
-            }
+        JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(1, url, req_data, (Response.Listener) (new Response.Listener<JSONObject>() {
             public void onResponse(String var1) {
                 this.onResponse((String) var1);
                 Log.d(TAG, "onResponseObject: " + var1);
             }
-
-
-            public final void onResponse(JSONObject response) {
-                JSONObject jsonObject = null;
+            public void onResponse(JSONObject response) {
                 try {
+                    JSONObject jsonObject = new JSONObject(response.toString());
                     jsonObject = new JSONObject(response.toString());
-                    String pageName = jsonObject.getString("tripid");
-                    Log.d(TAG, "onResponse: " + pageName);
-//                    kelione = jsonObject.getInt("tripid");
-//                    Log.d(TAG, "TRIP ID: " +kelione);
-                    duration = jsonObject.getString("keliones_laikas");
+                    Log.d(TAG, "onResponse: " + response.toString());
+                    duration = jsonObject.getString("kelias");
                     Log.d(TAG, "onResponse: " + duration);
-//                    vidgreitis = jsonObject.getInt("vid.greitis");
-//                    data = jsonObject.getString("data");
-//                    distance = jsonObject.getInt("distance");
-//
-//                    info = jsonObject.getString("info");
-
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
@@ -220,6 +206,40 @@ public class About extends AppCompatActivity implements NavigationView.OnNavigat
     }
 
 
+    //
+//    private void jsonParse() {
+//
+//        String url = "http://127.0.0.1:8000/products/products/";
+//
+//        JsonObjectRequest request = new JsonObjectRequest(Request.Method.GET, url, null,
+//                new Response.Listener<JSONObject>() {
+//                    @Override
+//                    public void onResponse(JSONObject response) {
+//                        try {
+//                            JSONArray jsonArray = response.getJSONArray("");
+//
+//                            for (int i = 0; i < jsonArray.length(); i++) {
+//                                JSONObject o = jsonArray.getJSONObject(i);
+//                                int id = o.getInt("id");
+//                                String title = o.getString("title");
+//
+//                                String description = o.getString("description");
+//                                String price = o.getString("price");
+//                                mTextViewResult.append(title + ", " + String.valueOf(id) + ", "+price +"," + description + "\n\n");
+//                            }
+//                        } catch (JSONException e) {
+//                            e.printStackTrace();
+//                        }
+//                    }
+//                }, new Response.ErrorListener() {
+//            @Override
+//            public void onErrorResponse(VolleyError error) {
+//                error.printStackTrace();
+//            }
+//        });
+//
+//        mQueue.add(request);}
+///
     public void loadurl() {
         JsonArrayRequest stringRequest=new JsonArrayRequest(URL_Data, new Response.Listener<JSONArray>() {
 

@@ -120,6 +120,8 @@ public class Profile extends AppCompatActivity implements NavigationView.OnNavig
         final TextView tripk = (TextView) findViewById(R.id.tripkeitimas);
         tripk.setText(String.valueOf(MainActivity.kelione));
 
+        final TextView tripd = (TextView) findViewById(R.id.tripdistance);
+        tripd.setText(String.valueOf(MainActivity.distance));
 
 
         //Navigation drawer
