@@ -157,7 +157,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
     Toolbar toolbar = null;
 
     double ax, ay, az;
-    double aysenas = 0;
+    double azsenas;
 
     boolean detection_state = false;
 
@@ -766,10 +766,9 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
             }
 
 
-            if (detection_state == true && (az > 10.60)) {
-                Log.d(TAG, "Akselerometras aysenas siuncia1: " + aysenas);
-                Log.d(TAG, "Skirtumas: " + (ax - aysenas));
-                aysenas = ay;
+            if (detection_state == true && (az - azsenas > 0.79)) {
+                Log.d(TAG, "Skirtumas: " + (az - azsenas));
+
 
                 final String url2 = "http://78.60.2.145:8001/duobes/";
                 latitude = (float) location.getLatitude();
@@ -787,7 +786,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
                 Log.d(TAG, "Akselerometras x siuncia: " + ax);
                 Log.d(TAG, "Akselerometras y siuncia: " + ay);
                 Log.d(TAG, "Akselerometras z siuncia: " + az);
-                Log.d(TAG, "Akselerometras aysenas siuncia2: " + aysenas);
+                Log.d(TAG, "Akselerometras azsenas: " + azsenas);
 
                 JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(1, url2, req_data, (Response.Listener) (new Response.Listener() {
                     public void onResponse(Object var1) {
@@ -804,6 +803,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
 
 
             }
+            azsenas = az;
 
 
         }

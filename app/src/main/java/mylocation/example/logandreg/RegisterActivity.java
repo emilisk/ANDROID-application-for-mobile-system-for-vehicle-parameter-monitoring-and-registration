@@ -125,8 +125,6 @@ public class RegisterActivity extends AppCompatActivity {
                 }
 
                 if(pwd.equals(cnf_pwd) && validateEmailAddress(mTextEmail) == true && validatePassword(mTextPassword) == true && validateUsername(mTextUsername)) {
-
-
                     JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(1, url, req_data, (Response.Listener) (new Response.Listener() {
                         public void onResponse(Object var1) {
                             this.onResponse((JSONObject) var1);
