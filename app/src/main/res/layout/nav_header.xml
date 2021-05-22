@@ -15,10 +15,10 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:paddingTop="8dp"
-        android:text="TripLog"
+        android:text="MyTrips"
         android:textAppearance="@style/TextAppearance.AppCompat.Body1" />
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="info@triplog.com" />
+        android:text="info@mytrips.com" />
 </LinearLayout>

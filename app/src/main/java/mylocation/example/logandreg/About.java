@@ -34,9 +34,6 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.util.ArrayList;
-import java.util.List;
-
 public class About extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
 
     private static final String TAG ="About";
@@ -50,7 +47,7 @@ public class About extends AppCompatActivity implements NavigationView.OnNavigat
 
     RecyclerView recyclerView;
     RecyclerView.Adapter adapter;
-    List<User> user;
+//    List<User> user;
     String URL_Data="https://api.github.com/users";
     RequestQueue reqQue;
 
@@ -119,7 +116,7 @@ public class About extends AppCompatActivity implements NavigationView.OnNavigat
         recyclerView=(RecyclerView)findViewById(R.id.recyleview);
         recyclerView.setHasFixedSize(true);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
-        user=new ArrayList<>();
+//        user=new ArrayList<>();
 
 
         loadingurl();
@@ -246,7 +243,7 @@ public class About extends AppCompatActivity implements NavigationView.OnNavigat
             @Override
             public void onResponse(JSONArray response) {
 
-                getvalue(response);
+//                getvalue(response);
 
             }
         }, new Response.ErrorListener() {
@@ -261,32 +258,32 @@ public class About extends AppCompatActivity implements NavigationView.OnNavigat
         reqQue.add(stringRequest);
     }
 
-    public void getvalue(JSONArray array) {
-
-        for (int i = 0; i < array.length(); i++) {
-
-            User userlist = new User();
-
-            JSONObject json = null;
-            try {
-                json = array.getJSONObject(i);
-
-
-                userlist.setLogin(json.getString("login"));
-
-                userlist.setType(json.getString("type"));
-
-            } catch (JSONException e) {
-
-                e.printStackTrace();
-            }
-            user.add(userlist);
-        }
-
-        adapter = new UserAdapter(user, this);
-
-        recyclerView.setAdapter(adapter);
-    }
+//    public void getvalue(JSONArray array) {
+//
+//        for (int i = 0; i < array.length(); i++) {
+//
+//            User userlist = new User();
+//
+//            JSONObject json = null;
+//            try {
+//                json = array.getJSONObject(i);
+//
+//
+//                userlist.setLogin(json.getString("login"));
+//
+//                userlist.setType(json.getString("type"));
+//
+//            } catch (JSONException e) {
+//
+//                e.printStackTrace();
+//            }
+//            user.add(userlist);
+//        }
+//
+//        adapter = new UserAdapter(user, this);
+//
+//        recyclerView.setAdapter(adapter);
+//    }
 
     @Override
     public void onBackPressed() {

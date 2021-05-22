@@ -218,7 +218,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
                 ApplicationInfo api = getApplicationContext().getApplicationInfo();
                 String apkpath = api.sourceDir;
                 Intent intent = new Intent(Intent.ACTION_SEND);
-                String shareBody = "TripLog";
+                String shareBody = "MyTrips";
                 intent.setType("text/plain");
                 intent.putExtra(android.content.Intent.EXTRA_SUBJECT, "Try subject");
                 intent.putExtra(android.content.Intent.EXTRA_TEXT, shareBody);
@@ -1188,7 +1188,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
                     ApplicationInfo api = getApplicationContext().getApplicationInfo();
                     String apkpath = api.sourceDir;
                     Intent intent = new Intent(Intent.ACTION_SEND);
-                    String shareBody = "TripLog";
+                    String shareBody = "MyTrips";
                     intent.setType("text/plain");
                     intent.putExtra(android.content.Intent.EXTRA_SUBJECT, "Try subject");
                     intent.putExtra(android.content.Intent.EXTRA_TEXT, shareBody);
