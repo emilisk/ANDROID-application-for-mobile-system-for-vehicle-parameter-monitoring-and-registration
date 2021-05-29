@@ -48,6 +48,7 @@ public class MainActivity extends AppCompatActivity {
 
     static String email;
     static String username;
+    static String password;
     static String distance;
     static int ats;
     static int kelione;
@@ -122,6 +123,7 @@ public class MainActivity extends AppCompatActivity {
                 String URL = "http://78.60.2.145:8001/registracija2/";
                 final String TAG ="MainActivity";
                 String finalUser = user;
+                String finalPwd = pwd;
                 JsonObjectRequest objectRequest = new JsonObjectRequest(Request.Method.POST, URL, req_data, new Response.Listener<JSONObject>() {
                     @Override
                     public void onResponse(JSONObject response) {
@@ -133,6 +135,7 @@ public class MainActivity extends AppCompatActivity {
                             email = jsonObject.getString("email");
                             distance = jsonObject.getString("kelias");
                             username = finalUser;
+                            password = finalPwd;
                             //Log.d(TAG, "objektas: " + response);
                             Log.d(TAG, "objektas123: " + ats);
                             Log.d(TAG, "keliones id: " + kelione);
@@ -155,6 +158,7 @@ public class MainActivity extends AppCompatActivity {
                             Intent profileactivityIntent = new Intent (MainActivity.this, Profile.class);
                             profileactivityIntent.putExtra(EXTRA_NUMBER2, ats2);
                             profileactivityIntent.putExtra(EXTRA_NUMBER_KID2, kelione2);
+                            profileactivityIntent.putExtra(EXTRA_NUMBER_KID2, password);
 
                             Log.d(TAG, "pirma: " + response.toString());
                             //}

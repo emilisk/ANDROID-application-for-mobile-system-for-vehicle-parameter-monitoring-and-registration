@@ -78,6 +78,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Timer;
 import java.util.TimerTask;
+import java.lang.Math;
 
 import static mylocation.example.logandreg.MainActivity.ats;
 import static mylocation.example.logandreg.MainActivity.kelione;
@@ -93,6 +94,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
     LocationRequest locationRequest;
 
 
+    static String totaldistance;
     // duobes trys asys
 
     double latitude1;
@@ -234,6 +236,37 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_maps);
+
+        final JSONObject req_data = new JSONObject();
+        try {
+            req_data.put("username", MainActivity.username);
+            req_data.put("password", MainActivity.password);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+        RequestQueue requestQueue = Volley.newRequestQueue(MapsActivity.this);
+        String URL = "http://78.60.2.145:8001/registracija2/";
+        final String TAG ="Profile";
+        JsonObjectRequest objectRequest = new JsonObjectRequest(Request.Method.POST, URL, req_data, new Response.Listener<JSONObject>() {
+            @Override
+            public void onResponse(JSONObject response) {
+                try {
+                    JSONObject jsonObject = new JSONObject(response.toString());
+                    totaldistance = jsonObject.getString("kelias");
+                    Log.d(TAG, "Distance: " + totaldistance);
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
+        }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                Log.d(TAG, "Rest Response: " + error.toString());
+            }
+        });
+        requestQueue.add(objectRequest);
+
 
 
         sensorManager = (SensorManager) getSystemService(SENSOR_SERVICE);
@@ -765,9 +798,12 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
                 queue.add((Request) jsonObjectRequest);
             }
 
-
-            if (detection_state == true && (az - azsenas > 0.79)) {
+                double skirtumas;
+                skirtumas = az - azsenas;
+                Math.abs(skirtumas);
+            if (detection_state == true && (skirtumas > 0.79)) {
                 Log.d(TAG, "Skirtumas: " + (az - azsenas));
+                Log.d(TAG, "Abs Skirtumas: " + skirtumas);
 
 
                 final String url2 = "http://78.60.2.145:8001/duobes/";

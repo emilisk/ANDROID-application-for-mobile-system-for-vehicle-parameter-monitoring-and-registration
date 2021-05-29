@@ -199,9 +199,21 @@ public class RegisterActivity extends AppCompatActivity {
 
     private boolean validatePassword (EditText mTextPassword){
         String passwordinput = mTextPassword.getText().toString();
+        String passwordVal = "^" +
+                //"(?=.*[0-9])" +         //at least 1 digit
+                //"(?=.*[a-z])" +         //at least 1 lower case letter
+                //"(?=.*[A-Z])" +         //at least 1 upper case letter
+                "(?=.*[a-zA-Z])" +      //any letter
+                "(?=.*[@#$%^&+=])" +    //at least 1 special character
+                "(?=\\S+$)" +           //no white spaces
+                ".{4,}" +               //at least 4 characters
+                "$";
 
-        if(passwordinput.isEmpty()){
-            Toast.makeText(this,"Password field cannot be empty",Toast.LENGTH_SHORT).show();
+        if(passwordinput.isEmpty()) {
+            Toast.makeText(this, "Password field cannot be empty", Toast.LENGTH_SHORT).show();
+            return false;
+        }else if (!passwordinput.matches(passwordVal)) {
+            Toast.makeText(this, "Password is too weak, it must have 1 special symbol, at least 4 characters", Toast.LENGTH_SHORT).show();
             return false;
         }else{
             return true;
@@ -210,9 +222,16 @@ public class RegisterActivity extends AppCompatActivity {
 
     private boolean validateUsername (EditText mTextUsername){
         String usernameinput = mTextUsername.getText().toString();
+        String noWhiteSpace = "\\A\\w{4,20}\\z";
 
-        if(usernameinput.isEmpty()){
-            Toast.makeText(this,"Username field cannot be empty",Toast.LENGTH_SHORT).show();
+        if(usernameinput.isEmpty()) {
+            Toast.makeText(this, "Username field cannot be empty", Toast.LENGTH_SHORT).show();
+            return false;
+        } else if (usernameinput.length() >= 15) {
+            Toast.makeText(this, "Username is too long, 15 symbols is the max", Toast.LENGTH_SHORT).show();
+            return false;
+        } else if (!usernameinput.matches(noWhiteSpace)) {
+            Toast.makeText(this, "White space are not allowed, 4 characters at least", Toast.LENGTH_SHORT).show();
             return false;
         }else{
             return true;

@@ -30,6 +30,9 @@ public class Profile extends AppCompatActivity implements NavigationView.OnNavig
     private static final String TAG ="Profile";
 
 
+    static String distance;
+
+
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater inflater = getMenuInflater();
@@ -99,6 +102,7 @@ public class Profile extends AppCompatActivity implements NavigationView.OnNavig
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_profile);
+        
 
         Intent intent = getIntent();
         int ats =  intent.getIntExtra(MainActivity.EXTRA_NUMBER2,0);
@@ -121,8 +125,7 @@ public class Profile extends AppCompatActivity implements NavigationView.OnNavig
         tripk.setText(String.valueOf(MainActivity.kelione));
 
         final TextView tripd = (TextView) findViewById(R.id.tripdistance);
-        tripd.setText(String.valueOf(MainActivity.distance));
-
+            tripd.setText(String.valueOf(MainActivity.distance));
 
         //Navigation drawer
         Toolbar toolbar = findViewById(R.id.toolbar);
@@ -164,6 +167,11 @@ public class Profile extends AppCompatActivity implements NavigationView.OnNavig
                 return false;
             }
         });
+    }
+
+    private void duomenys(){
+        final TextView tripd = (TextView) findViewById(R.id.tripdistance);
+        tripd.setText(String.valueOf(distance));
     }
 
     @Override
