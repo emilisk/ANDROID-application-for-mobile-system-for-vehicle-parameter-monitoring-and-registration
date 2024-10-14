@@ -10,5 +10,5 @@ User login and registration:<br />
 <img src="https://github.com/user-attachments/assets/30a41016-b425-44a9-8f09-ca08e4d1afa0" width="250" length="250"><br />
 User profile info:<br />
 <img src="https://github.com/user-attachments/assets/dc495cdc-b111-4e63-8fda-ec2c7f4e1727" width="250" length="250"><br />
-Website(implemented by other team member) shows information about the trips, each trip shows the journey on a map:
+Website(implemented by other team member) shows information about the trips, each trip shows the journey on a map:<br />
 <img src="https://github.com/user-attachments/assets/51439a39-9964-4229-bbeb-8199ef8e84f6" width="500" length="500"><br />
