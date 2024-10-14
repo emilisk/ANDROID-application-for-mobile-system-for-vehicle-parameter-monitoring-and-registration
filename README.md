@@ -7,6 +7,6 @@ System structure diagram.<br />
 <img src="https://github.com/user-attachments/assets/8ec29e46-fd89-4204-a35f-25648b6f0fdb" width="350" length="350"><br />
 A sketch of the main window in the android app:<br />
 <img src="https://github.com/user-attachments/assets/20484479-a71a-42c3-9d45-d6fcf4c549d3" width="250" length="250"><br />
-User login and registration:
+User login and registration:<br />
 <img src="https://github.com/user-attachments/assets/28ec1764-c81a-4f42-85c5-33e0edb36a15" width="250" length="250"><br />
 <img src="https://github.com/user-attachments/assets/30a41016-b425-44a9-8f09-ca08e4d1afa0" width="250" length="250"><br />
